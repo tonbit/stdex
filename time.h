@@ -2,35 +2,44 @@
 #define STDEX_TIME_H_
 
 #include "stdex/stdcc.h"
+#include <sys/timeb.h>
 namespace stdex {
 
-inline u64 get_time_tick()
+inline uint64_t get_time_tick()
 {
 #ifdef _MSC_VER
     struct _timeb tb;
     _ftime(&tb);
-    return (u64)tb.time*1000 + (u64)tb.millitm;
+    return (uint64_t)tb.time*1000 + (uint64_t)tb.millitm;
 #else
     struct timeb tb;
     ftime(&tb);
-    return (u64)tb.time*1000 + (u64)tb.millitm;
+    return (uint64_t)tb.time*1000 + (uint64_t)tb.millitm;
 #endif
 }
 
-inline string get_time_compact()
+inline string to_time_compact(std::time_t t)
 {
-	char buf[32];
-	time_t t = time(NULL);
-	strftime(buf, sizeof(buf), "%Y%m%d%H%M%S", localtime(&t));
-	return buf;
+	std::stringstream ss;
+	ss << std::put_time(localtime(&t), "%Y%m%d%H%M%S");
+	return ss.str();
 }
 
-inline string get_time_iso()
+//ISO 8601
+inline string to_time_iso(std::time_t t)
 {
-	char buf[32];
-	time_t t = time(NULL);
-	strftime(buf, sizeof(buf), "%F %T", localtime(&t));
-	return buf;
+	std::stringstream ss;
+	ss << std::put_time(localtime(&t), "%Y-%m-%d %H:%M:%S");
+	return ss.str();
+}
+
+//ISO 8601
+inline time_t from_time_iso(const string &in)
+{
+	std::tm tm;
+	std::stringstream ss(in);
+	ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
+	return mktime(&tm);
 }
 
 }

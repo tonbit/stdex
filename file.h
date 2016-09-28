@@ -3,144 +3,142 @@
 
 #include "stdex/stdcc.h"
 #include <dirent.h>
-
 namespace stdex {
 namespace file {
 
 inline bool file_exist(const string &path)
 {
-	FILE *pf = fopen(path.c_str(), "r");
-	if (!pf)
+	std::ifstream file;
+	file.open(path);
+
+	if (!file.is_open())
 		return false;
 
-    fclose(pf);
+    file.close();
 	return true;
 }
 
 inline size_t file_size(const string &path)
 {
-    FILE *pf = fopen(path.c_str(), "rb");
-    if (!pf)
-        return 0;
+	std::ifstream file;
+	file.open(path);
 
-    fseek(pf, 0, SEEK_END);
-    size_t len = ftell(pf);
+	if (!file.is_open())
+		return 0;
 
-    fclose(pf);
-    return len;
+	file.seekg(0, std::ios_base::end);
+	std::streamoff size = file.tellg();
+
+    file.close();
+    return static_cast<size_t>(size);
 }
 
 inline std::vector<char> load_data(const string &path)
 {
-    FILE *pf = NULL;
-    std::vector<char> data;
+	std::ifstream file;
+	std::vector<char> data;
 
-    pf = fopen(path.c_str(), "rb");
-	if (!pf)
-		return std::vector<char>();
+	file.open(path, std::ios::in | std::ios::binary);
+	if (!file.is_open())
+		return std::move(data);
 
-    fseek(pf, 0, SEEK_END);
-    size_t len = ftell(pf);
-    data.resize(len);
+	file.seekg(0, std::ios_base::end);
+	std::streamoff size = file.tellg();
+    data.resize(static_cast<size_t>(size));
 
-    fseek(pf, 0, SEEK_SET);
-    fread(&data[0], 1, len, pf);
-
-    fclose(pf);
-    return std::move(data);
+	file.seekg(0, std::ios_base::beg);
+	file.read(&data[0], size);
+	file.close();
+	return std::move(data);
 }
 
 inline int save_data(const string &path, const std::vector<char> &data)
 {
-    FILE *pf = NULL;
+	std::ofstream file;
 
-    pf = fopen(path.c_str(), "wb");
-    if (!pf)
+	file.open(path, std::ios::out | std::ios::binary);
+	if (!file.is_open())
         return 1;
 
-    fwrite(&data[0], 1, data.size(), pf);
-
-    fclose(pf);
+	file.write(&data[0], data.size());
+	file.close();
     return 0;
 }
 
 inline std::string load_text(const string &path)
 {
-    FILE *pf = NULL;
-    string text;
+	std::ifstream file;
+	string text;
 
-    pf = fopen(path.c_str(), "rb");
-    if (!pf)
-        return string();
+	file.open(path, std::ios::in | std::ios::binary);
+	if (!file.is_open())
+        return std::move(text);
 
-    fseek(pf, 0, SEEK_END);
-    size_t len = ftell(pf);
-    text.resize(len);
+	file.seekg(0, std::ios_base::end);
+	std::streamoff size = file.tellg();
+	text.resize(static_cast<size_t>(size));
 
-    fseek(pf, 0, SEEK_SET);
-    fread(&text[0], 1, len, pf);
-
-    fclose(pf);
+	file.seekg(0, std::ios_base::beg);
+	file.read(&text[0], size);
+	file.close();
     return std::move(text);
 }
 
 inline int save_text(const string &path, const std::string &text)
 {
-    FILE *pf = NULL;
+	std::ofstream file;
 
-    pf = fopen(path.c_str(), "wb");
-    if (!pf)
-        return 1;
+	file.open(path, std::ios::out | std::ios::binary);
+	if (!file.is_open())
+		return 1;
 
-    fwrite(&text[0], 1, text.size(), pf);
-
-    fclose(pf);
-    return 0;
+	file.write(&text[0], text.size());
+	file.close();
+	return 0;
 }
 
 inline std::vector<string> load_lines(const string &path)
 {
-    std::vector<string> lines;
+	std::ifstream file;
+	std::vector<string> lines;
+
+	file.open(path);
+	if (!file.is_open())
+		return std::move(lines);
+
+    char buf[128];
 	string line;
 
-    FILE *pf = NULL;
-    char buf[128];
-
-    pf = fopen(path.c_str(), "rb");
-    if (!pf)
-        return lines;
-
-    while (fgets(buf, sizeof(buf), pf))
+    while (!file.eof())
     {
-    	if (strnlen(buf, sizeof(buf)) < sizeof(buf)-1)
-    	{
-			line.append(buf);
-			lines.push_back(std::move(line));
-    	}
-    	else
-    	{
-			line.append(buf);
-    	}
+		file.getline(buf, sizeof(buf));
+		line.append(buf);
+
+		if (file.rdstate() == std::ios_base::failbit)
+		{
+			file.clear();
+			continue;
+		}
+
+		lines.push_back(std::move(line));
     }
 
-    fclose(pf);
+	file.close();
     return std::move(lines);
 }
 
 inline int save_lines(const string &path, const std::vector<string> &lines)
 {
-    FILE *pf = NULL;
+	std::ofstream file;
 
-    pf = fopen(path.c_str(), "wb");
-    if (!pf)
-        return 1;
+	file.open(path);
+	if (!file.is_open())
+		return 1;
 
     for (const string &line : lines)
-    {
-    	fputs(line.c_str(), pf);
-    }
+		file << line << '\n';
 
-    fclose(pf);
+	file.close();
     return 0;
 }
 
@@ -155,7 +153,7 @@ inline std::vector<string> list_dir(const string &path)
 	std::vector<string> tmp;
     struct dirent *ptr;
 
-    while((ptr = readdir(dir)) != NULL) ///read the list of this dir
+    while((ptr = readdir(dir)) != NULL) //read the list of this dir
     {
 		tmp.push_back(ptr->d_name);
     }

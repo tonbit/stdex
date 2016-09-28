@@ -1,8 +1,8 @@
 #ifndef STDEX_PIPE_H_
 #define STDEX_PIPE_H_
 
-#include "stdcc.h"
-#include "queue.h"
+#include "stdex/stdcc.h"
+#include "stdex/queue.h"
 #include <thread>
 namespace stdex {
 

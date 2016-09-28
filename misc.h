@@ -4,6 +4,10 @@
 #include "stdex/stdcc.h"
 #include <chrono>
 #include <thread>
+#ifdef _MSC_VER
+#include <Ws2tcpip.h>
+#define inet_ntop InetNtop
+#endif
 
 namespace stdex {
 
@@ -23,13 +27,13 @@ inline int get_host_addr(const string &host, string &addr)
 
     if (he->h_addrtype == AF_INET)
     {
-        if (inet_ntop(AF_INET, he->h_addr, buf, sizeof(buf)) == NULL)
-            return 2;
+		if (inet_ntop(AF_INET, he->h_addr, buf, sizeof(buf)) == NULL)
+			return 2;
     }
     else if (he->h_addrtype == AF_INET6)
     {
-        if (inet_ntop(AF_INET6, he->h_addr, buf, sizeof(buf)) == NULL)
-            return 3;
+		if (inet_ntop(AF_INET6, he->h_addr, buf, sizeof(buf)) == NULL)
+			return 3; 
     }
     else
     {

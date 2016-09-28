@@ -2,7 +2,6 @@
 #define CHRYSA_JSON_H_
 
 #include "stdcc.h"
-#include <map>
 namespace stdex {
 namespace json {
 
@@ -97,32 +96,33 @@ public:
 
     inline Value &operator=(bool val)
     {
-        _type = val ? TYPE_TRUE : TYPE_FALSE;
+        _type = TYPE_BOOLEAN;
+        _boolean = val;
         return *this;
     }
 
-    inline Value &operator=(i32 val)
+    inline Value &operator=(int32_t val)
     {
         _type = TYPE_NUMBER;
         _number = (double)val;
         return *this;
     }
 
-    inline Value &operator=(i64 val)
+    inline Value &operator=(int64_t val)
     {
         _type = TYPE_NUMBER;
         _number = (double)val;
         return *this;
     }
 
-    inline Value &operator=(f32 val)
+    inline Value &operator=(float val)
     {
         _type = TYPE_NUMBER;
         _number = (double)val;
         return *this;
     }
 
-    inline Value &operator=(f64 val)
+    inline Value &operator=(double val)
     {
         _type = TYPE_NUMBER;
         _number = (double)val;
@@ -159,63 +159,47 @@ public:
 
     inline Value &operator[](const string &s)
     {
-    	assert(_type == TYPE_NULL || _type == TYPE_OBJECT);
-        _type = TYPE_OBJECT;
+    	if (_type == TYPE_NULL)
+    		_type = TYPE_OBJECT;
+
+    	assert(_type == TYPE_OBJECT);
         return _object[s];
     }
 
     inline Value &operator[](size_t i)
     {
+    	if (_type == TYPE_NULL)
+    		_type = TYPE_OBJECT;
+
+		assert(_type == TYPE_ARRAY);
+
         if (i >= _array.size())
             _array.resize(i+1);
 
-		assert(_type == TYPE_NULL || _type == TYPE_ARRAY);
-        _type = TYPE_ARRAY;
         return _array[i];
     }
 
-    inline void set_true()
+    inline void set_boolean(bool val)
     {
-        _type = TYPE_TRUE;
+        _type = TYPE_BOOLEAN;
+        _boolean = val;
     }
 
-    inline void set_false()
-    {
-        _type = TYPE_FALSE;
-    }
-
-    inline void set_number(double val)
+	template<typename Type>
+    inline void set_number(Type val)
     {
         _type = TYPE_NUMBER;
         _number = val;
     }
 
-    inline bool get_bool() const
+    inline bool get_boolean() const
     {
-        if (_type == TYPE_TRUE)
-            return true;
-        else
-            return false;
+        return _boolean;
     }
 
-    inline i32 get_i32() const
+    inline double get_number()
     {
-        return (i32)_number;
-    }
-
-    inline i64 get_i64() const
-    {
-        return (i64)_number;
-    }
-
-    inline f32 get_f32() const
-    {
-        return (f32)_number;
-    }
-
-    inline f64 get_f64() const
-    {
-        return (f64)_number;
+        return _number;
     }
 
     inline string get_string() const
@@ -241,20 +225,20 @@ public:
     	{
    			const Value &value = pair.second;
 
-			if (value._type == TYPE_STRING)
+			if (value._type == TYPE_NUMBER)
 			{
-				map[pair.first] = value._string;
-			}
-			else if (value._type == TYPE_NUMBER)
-			{
-				if (value._number - (i64)value._number > 0)
+				if (value._number > (int64_t)value._number)
 				{
 					map[pair.first] = std::to_string(value._number);
 				}
 				else
 				{
-					map[pair.first] = std::to_string((i64)value._number);
+					map[pair.first] = std::to_string((int64_t)value._number);
 				}
+			}
+			else if (value._type == TYPE_STRING)
+			{
+				map[pair.first] = value._string;
 			}
 			else if (value._type == TYPE_ARRAY)
 			{
@@ -268,13 +252,12 @@ public:
 				value.gen_array(tmp);
 				map[pair.first] = std::move(tmp);
 			}
-			else if (value._type == TYPE_TRUE)
+			else if (value._type == TYPE_BOOLEAN)
 			{
-				map[pair.first] = "true";
-			}
-			else if (value._type == TYPE_FALSE)
-			{
-				map[pair.first] = "false";
+				if (_boolean)
+					map[pair.first] = "true";
+				else
+					map[pair.first] = "false";
 			}
 			else if (value._type == TYPE_NULL)
 			{
@@ -288,6 +271,11 @@ public:
     inline bool is_null() const
     {
     	return _type == TYPE_NULL;
+    }
+
+    inline bool is_boolean() const
+    {
+    	return _type == TYPE_BOOLEAN;
     }
 
     inline bool is_number() const
@@ -310,94 +298,139 @@ public:
     	return _type == TYPE_STRING;
     }
 
-    //not support to escape control char
-    string escape(const char *str, size_t len) const
+    string serialize()
     {
-        string ret;
-        ret.reserve(len);
-
-        while (len > 0)
-        {
-            if (!iscntrl(str[0]) && str[0]!='"' && str[0]!='\\')
-            {
-                ret += str[0];
-            }
-            else
-            {
-                switch (str[0])
-                {
-                    case '\x08': ret += "\\b"; break;   //backspace
-                    case '\x09': ret += "\\t"; break;   //tab
-                    case '\x0a': ret += "\\n"; break;   //line feed
-                    case '\x0c': ret += "\\f"; break;   //form feed
-                    case '\x0d': ret += "\\r"; break;   //carriage return
-                    case '\x22': ret += "\\\""; break;   //quotation mark
-                    case '\x5c': ret += "\\\\"; break;   //reverse solidus
-                }
-            }
-            ++str; --len;
-        }
-
-        return ret;
+        string tmp;
+        tmp.reserve(4096);
+        generate(tmp);
+        return tmp;
     }
 
-    //not support to unescape control char
-    string unescape(const char *str, int len)
+	int deserialize(const char *input)
+	{
+		clear();
+		return parse(input);
+	}
+
+    int deserialize(const string &input)
     {
-        string ret;
-        ret.reserve(len);
-
-        while (len > 0)
-        {
-            if (str[0] != '\\')
-            {
-                ret += str[0];
-            }
-            else if (len > 1)
-            {
-                switch (str[1])
-                {
-                    case '"': ret += '"'; break;        //quotation mark
-                    case '\\': ret += '\\'; break;      //reverse solidus
-                    case '/': ret += '/'; break;        //solidus
-                    case 'b': ret += '\b'; break;       //backspace
-                    case 'f': ret += '\f'; break;       //form feed
-                    case 'r': ret += '\r'; break;       //carriage return
-                    case 'n': ret += '\n'; break;       ////line feed
-                    case 't': ret += '\t'; break;       //tab
-                }
-                ++str; --len;
-            }
-            ++str; --len;
-        }
-
-        return ret;
+        clear();
+        return parse(input.c_str());
     }
+
+    void clear()
+    {
+        _type = TYPE_NULL;
+        _string.clear();
+        _array.clear();
+        _object.clear();
+    }
+
+private:
+    enum Type
+    {
+        TYPE_NULL,
+        TYPE_BOOLEAN,
+        TYPE_NUMBER,
+        TYPE_STRING,
+        TYPE_ARRAY,
+        TYPE_OBJECT,
+    };
+
+    Type _type;
+    bool _boolean;
+    double _number;
+    string _string;
+    std::vector<Value> _array;
+    std::map<string, Value> _object;
+
+
+	//todo not support to escape control char
+	string escape(const char *str, size_t len) const
+	{
+		string ret;
+		ret.reserve(len);
+
+		while (len > 0)
+		{
+			if (!iscntrl(str[0]) && str[0]!='"' && str[0]!='\\')
+			{
+				ret += str[0];
+			}
+			else
+			{
+				switch (str[0])
+				{
+					case '\x08': ret += "\\b"; break;	//backspace
+					case '\x09': ret += "\\t"; break;	//tab
+					case '\x0a': ret += "\\n"; break;	//line feed
+					case '\x0c': ret += "\\f"; break;	//form feed
+					case '\x0d': ret += "\\r"; break;	//carriage return
+					case '\x22': ret += "\\\""; break;	 //quotation mark
+					case '\x5c': ret += "\\\\"; break;	 //reverse solidus
+				}
+			}
+			++str; --len;
+		}
+
+		return ret;
+	}
+
+	//todo not support to unescape control char
+	string unescape(const char *str, int len)
+	{
+		string ret;
+		ret.reserve(len);
+
+		while (len > 0)
+		{
+			if (str[0] != '\\')
+			{
+				ret += str[0];
+			}
+			else if (len > 1)
+			{
+				switch (str[1])
+				{
+					case '"': ret += '"'; break;		//quotation mark
+					case '\\': ret += '\\'; break;		//reverse solidus
+					case '/': ret += '/'; break;		//solidus
+					case 'b': ret += '\b'; break;		//backspace
+					case 'f': ret += '\f'; break;		//form feed
+					case 'r': ret += '\r'; break;		//carriage return
+					case 'n': ret += '\n'; break;		////line feed
+					case 't': ret += '\t'; break;		//tab
+				}
+				++str; --len;
+			}
+			++str; --len;
+		}
+
+		return ret;
+	}
 
     void gen_null(string &output) const
     {
         output += "null";
     }
 
-    void gen_true(string &output) const
+    void gen_boolean(string &output) const
     {
-        output += "true";
-    }
-
-    void gen_false(string &output) const
-    {
-        output += "false";
+    	if (_boolean)
+	        output += "true";
+	    else
+	    	output += "false";
     }
 
     void gen_number(string &output) const
     {
-    	if (_number - (i64)_number > 0)
+    	if (_number - (int64_t)_number > 0)
     	{
 			output += std::to_string(_number);
     	}
     	else
     	{
-			output += std::to_string((i64)_number);
+			output += std::to_string((int64_t)_number);
     	}
     }
 
@@ -455,26 +488,14 @@ public:
         {
             gen_object(output);
         }
-        else if (_type == TYPE_TRUE)
+        else if (_type == TYPE_BOOLEAN)
         {
-            gen_true(output);
-        }
-        else if (_type == TYPE_FALSE)
-        {
-            gen_false(output);
+            gen_boolean(output);
         }
         else
         {
             gen_null(output);
         }
-    }
-
-    string serialize()
-    {
-        string tmp;
-        tmp.reserve(4096);
-        generate(tmp);
-        return tmp;
     }
 
     inline int parse_ws(const char *str)
@@ -577,7 +598,7 @@ public:
                 if (off < 0)
                     return -1;
 
-                sub.set_true();
+                sub.set_boolean(true);
                 cur += off;
                 _array.push_back(sub);
             }
@@ -587,7 +608,7 @@ public:
                 if (off < 0)
                     return -1;
 
-                sub.set_false();
+                sub.set_boolean(false);
                 cur += off;
                 _array.push_back(sub);
             }
@@ -721,7 +742,7 @@ public:
                 if (off < 0)
                     return -1;
 
-                sub.set_true();
+                sub.set_boolean(true);
                 cur += off;
                 _object[label] = sub;
             }
@@ -731,7 +752,7 @@ public:
                 if (off < 0)
                     return -1;
 
-                sub.set_false();
+                sub.set_boolean(false);
                 cur += off;
                 _object[label] = sub;
             }
@@ -841,42 +862,9 @@ public:
 
         return cur - str;
     }
-
-    int deserialize(const string &input)
-    {
-        clear();
-        return parse(input.c_str());
-    }
-
-    void clear()
-    {
-        _type = TYPE_NULL;
-        _string.clear();
-        _array.clear();
-        _object.clear();
-    }
-
-private:
-    enum Type
-    {
-        TYPE_NULL,
-        TYPE_TRUE,
-        TYPE_FALSE,
-        TYPE_NUMBER,
-        TYPE_STRING,
-        TYPE_ARRAY,
-        TYPE_OBJECT,
-    };
-
-    Type _type;
-    double _number;
-    string _string;
-    std::vector<Value> _array;
-    std::map<string, Value> _object;
 };
 
 }
-
 }
 
 using JsonValue = stdex::json::Value;

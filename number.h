@@ -9,19 +9,19 @@ inline size_t align(size_t num, size_t x=sizeof(void *))
     return (num + x - 1) & ~(x - 1);
 }
 
-inline u32 lower32(u64 num)
+inline uint32_t lower32(uint64_t num)
 {
-    return (u32)(num & 0xffffffff);
+    return (uint32_t)(num & 0xffffffff);
 }
 
-inline u32 high32(u64 num)
+inline uint32_t high32(uint64_t num)
 {
-    return (u32)(num >> 32);
+    return (uint32_t)(num >> 32);
 }
 
-inline u64 make_u64(u32 hi, u32 lw)
+inline uint64_t make_u64(uint32_t hi, uint32_t lw)
 {
-    return (((u64)hi)<<32) + (u64)lw;
+    return (((uint64_t)hi)<<32) + (uint64_t)lw;
 }
 
 }

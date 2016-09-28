@@ -2,7 +2,6 @@
 #define STDEX_LOGGER_H_
 
 #include "stdex/stdcc.h"
-
 namespace stdex {
 
 class Logger
@@ -10,7 +9,6 @@ class Logger
 public:
 	Logger()
     {
-        _file = NULL;
         _level = 7;
         _debug = true;
     }
@@ -22,7 +20,7 @@ public:
 
 	int open(const string &path)
 	{
-        _file = fopen(path.c_str(), "ab");
+        _file.open(path, std::ios::app);
         if (!_file)
             return 1;
 
@@ -31,11 +29,8 @@ public:
 
 	void close()
     {
-        if (_file)
-        {
-            fclose(_file);
-            _file = NULL;
-        }
+        if (_file.is_open())
+            _file.close();
     }
 
     void set_debug(bool debug)
@@ -46,27 +41,6 @@ public:
     void set_level(int level)
     {
         _level=level;
-    }
-
-    static void log_sys(const string &ident, const char *format, ...)
-    {
-        #ifdef _MSC_VER
-
-        va_list args;
-        va_start(args, format);
-        vprintf(format, args);
-        va_end(args);
-
-        #else //_MSC_VER
-
-        va_list args;
-        va_start(args, format);
-        openlog(ident.c_str(), LOG_CONS | LOG_PID, LOG_USER);
-        vsyslog(LOG_INFO, format, args);
-        closelog();
-        va_end(args);
-
-        #endif //_MSC_VER
     }
 
     void log_fatal(const char *format, ...)
@@ -158,7 +132,7 @@ public:
     }
 
 private:
-    FILE *_file;
+    std::ofstream _file;
     int _level;
     bool _debug;
 
@@ -186,14 +160,12 @@ private:
 
         if (_debug)
 		{
-            //puts(buf);
-            std::cout << buf << std::flush;;
+            std::cout << buf << std::flush;
 		}
 
         if (_file)
 		{
-            fputs(buf, _file);
-			fflush(_file);
+            _file << buf << std::flush;
 		}
     }
 };

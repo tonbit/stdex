@@ -3,33 +3,20 @@
 
 #include "stdex/stdcc.h"
 #include "stdex/string.h"
-#include <map>
-
+#include "stdex/base64.h"
+#include "stdex/file.h"
 namespace stdex {
 
 class Config
 {
 public:
-    int load(const string &path)
+    int load(const string &path, const string &pem="")
     {
-        FILE *pf = NULL;
-        char buf[128];
-        string line;
+        std::vector<string> lines;
+        lines = stdex::file::load_lines(path);
 
-        pf = fopen(path.c_str(), "rb");
-        if (!pf)
-            return 1;
-
-        while (fgets(buf, sizeof(buf), pf))
+        for (auto &line : lines)
         {
-			if (strnlen(buf, sizeof(buf)) >= sizeof(buf)-1)
-	    	{
-	    		line.append(buf);
-	    		continue;
-	    	}
-
-			line.append(buf);
-
             const char *pos = line.c_str();
             int len;
 
@@ -54,14 +41,11 @@ public:
 					val.assign(pos, len);
 					val = trim(val);
 
-					_items[key] = val;
+					_items[key] = decrypt(pem, val);
 				}
             }
-
-            line = "";
         }
 
-        fclose(pf);
         return 0;
     }
 
@@ -85,7 +69,7 @@ public:
         auto iter = _items.find(key);
 
         if (iter != _items.end())
-            return atoi(iter->second.c_str());
+            return std::stoi(iter->second);
 
         return def;
     }
@@ -95,7 +79,7 @@ public:
         auto iter = _items.find(key);
 
         if (iter != _items.end())
-            return atof(iter->second.c_str());
+            return std::stod(iter->second.c_str());
 
         return def;
     }
@@ -150,6 +134,21 @@ private:
         }
 
         return sum;
+    }
+
+    string decrypt(const string &pem, const string &value)
+    {
+		if (startof(value, "RSA!"))
+		{
+#ifdef STDEX_HAS_OPENSSL
+			string encrypted = value.substr(4, value.size() - 4);
+			string decrypted;
+			rsa_pub_decrypt(pem, stdex::Base64::decode(encrypted), decrypted);
+			return std::move(decrypted);
+#endif
+		}
+
+		return value;
     }
 };
 

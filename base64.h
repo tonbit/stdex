@@ -72,7 +72,7 @@ public:
         const char bs64EncMap[] =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-        const u8 *txt = (const u8 *)&str[0];
+        const byte *txt = (const byte *)&str[0];
         size_t len = str.length();
 
         string b64((len+2)/3*4, 0);
@@ -113,7 +113,7 @@ public:
         const char bs64EncMap[] =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-        const u8 *txt = (const u8 *)&str[0];
+        const byte *txt = (const byte *)&str[0];
         size_t len = str.size();
 
         string b64((len+2)/3*4, 0);
@@ -213,7 +213,7 @@ public:
         const char bs64EncMap2[] =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
-        const u8 *txt = (const u8 *)&str[0];
+        const byte *txt = (const byte *)&str[0];
         size_t len = str.length();
 
         string b64((len+2)/3*4, 0);
@@ -253,7 +253,7 @@ public:
 		const char bs64EncMap2[] =
 			"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
-        const u8 *txt = (const u8 *)&str[0];
+        const byte *txt = (const byte *)&str[0];
 		size_t len = str.size();
 
 		string b64((len+2)/3*4, 0);

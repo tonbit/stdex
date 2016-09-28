@@ -77,10 +77,13 @@ inline wstring utf8_to_utf16(const string &utf8)
 	size_t outlen = utf16.size()*2;
 
 	iconv_t conv = iconv_open("UTF-16", "UTF-8");
-	iconv(conv, &inbuf, &inlen, &outbuf, &outlen);
+	int rc = iconv(conv, &inbuf, &inlen, &outbuf, &outlen);
 	iconv_close(conv);
 
-	utf16.resize(outlen/2);
+	if (rc < 0)
+		return wstring();
+
+	utf16.resize((utf16.size()*2-outlen)/2);
 	return std::move(utf16);
 }
 
@@ -95,10 +98,13 @@ inline string utf16_to_utf8(const wstring &utf16)
 	size_t outlen = utf8.size();
 
 	iconv_t conv = iconv_open("UTF-8", "UTF-16");
-	iconv(conv, &inbuf, &inlen, &outbuf, &outlen);
+	int rc = iconv(conv, &inbuf, &inlen, &outbuf, &outlen);
 	iconv_close(conv);
 
-	utf8.resize(outlen);
+	if (rc < 0)
+		return string();
+
+	utf8.resize(utf8.size()-outlen);
 	return std::move(utf8);
 }
 
@@ -113,10 +119,13 @@ inline wstring gbk_to_utf16(const string &gbk)
 	size_t outlen = utf16.size()*2;
 
 	iconv_t conv = iconv_open("UTF-16", "GBK");
-	iconv(conv, &inbuf, &inlen, &outbuf, &outlen);
+	int rc = iconv(conv, &inbuf, &inlen, &outbuf, &outlen);
 	iconv_close(conv);
 
-	utf16.resize(outlen/2);
+	if (rc < 0)
+		return wstring();
+
+	utf16.resize((utf16.size()*2-outlen)/2);
 	return std::move(utf16);
 }
 
@@ -131,10 +140,13 @@ inline string utf16_to_gbk(const wstring &utf16)
 	size_t outlen = gbk.size();
 
 	iconv_t conv = iconv_open("GBK", "UTF-16");
-	iconv(conv, &inbuf, &inlen, &outbuf, &outlen);
+	int rc = iconv(conv, &inbuf, &inlen, &outbuf, &outlen);
 	iconv_close(conv);
 
-	gbk.resize(outlen);
+	if (rc < 0)
+		return string();
+
+	gbk.resize(gbk.size()-outlen);
 	return std::move(gbk);
 }
 
@@ -149,10 +161,13 @@ inline string utf8_to_gbk(const string &utf8)
 	size_t outlen = gbk.size();
 
 	iconv_t conv = iconv_open("GBK", "UTF-8");
-	iconv(conv, &inbuf, &inlen, &outbuf, &outlen);
+	int rc = iconv(conv, &inbuf, &inlen, &outbuf, &outlen);
 	iconv_close(conv);
 
-	gbk.resize(outlen);
+	if (rc < 0)
+		return string();
+
+	gbk.resize(gbk.size()-outlen);
 	return std::move(gbk);
 }
 
@@ -166,11 +181,14 @@ inline string gbk_to_utf8(const string &gbk)
 	char *outbuf = (char *)&utf8[0];
 	size_t outlen = utf8.size();
 
-	iconv_t conv = iconv_open("GBK", "UTF-8");
-	iconv(conv, &inbuf, &inlen, &outbuf, &outlen);
+	iconv_t conv = iconv_open("UTF-8", "GBK");
+	int rc = iconv(conv, &inbuf, &inlen, &outbuf, &outlen);
 	iconv_close(conv);
 
-	utf8.resize(outlen);
+	if (rc < 0)
+		return string();
+
+	utf8.resize(utf8.size()-outlen);
 	return std::move(utf8);
 }
 
