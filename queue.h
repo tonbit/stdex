@@ -48,20 +48,6 @@ public:
         return std::move(obj);
     }
 
-	inline void roll_back(const Type &obj)
-    {
-        std::unique_lock<std::mutex> lock(_mutex);
-        _deque.push_front(obj);
-        _cond.notify_one();
-    }
-
-	inline void roll_back(Type &&obj)
-    {
-        std::unique_lock<std::mutex> lock(_mutex);
-        _deque.push_front(std::move(obj));
-        _cond.notify_one();
-    }
-
     inline void clear()
     {
         std::unique_lock<std::mutex> lock(_mutex);
@@ -183,26 +169,6 @@ public:
         return std::move(obj);
     }
 
-	inline void roll_back(const Type &obj)
-    {
-        std::unique_lock<std::mutex> lock(_mutex);
-        _deque.push_front(obj);
-		_journal << '~' << _serialize(obj) << '\n';
-		if (_sync_write)
-			_journal.flush();
-        _cond.notify_one();
-    }
-
-	inline void roll_back(Type &&obj)
-    {
-        std::unique_lock<std::mutex> lock(_mutex);
-        _deque.push_front(std::move(obj));
-        _journal << '~' << _serialize(_deque.front()) << '\n';
-		if (_sync_write)
-			_journal.flush();
-        _cond.notify_one();
-    }
-
     inline void clear()
     {
         std::unique_lock<std::mutex> lock(_mutex);
@@ -271,11 +237,6 @@ private:
 			{
 				assert(line.size() == 1);
 				_deque.pop_front();
-			}
-			else if (opt == '~')
-			{
-				Type tmp = _deserialize(&line[0] + 1);
-				_deque.push_front(std::move(tmp));
 			}
 			else if (opt == ' ')
 			{

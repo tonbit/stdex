@@ -51,9 +51,9 @@ public:
 
 	optional &operator=(optional &&other)
 	{
-		_owned = other.owned;
+		_owned = other._owned;
 		if (_owned)
-    		_value = std::move(other.object);
+    		_value = std::move(other._value);
 		return *this;
 	}
 
