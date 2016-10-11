@@ -119,7 +119,7 @@ public:
 
 	void swap(optional &other)
 	{
-		atuo tmp = std::move(other);
+		auto tmp = std::move(other);
 		other = std::move(*this);
 		*this = std::move(tmp);
 	}
