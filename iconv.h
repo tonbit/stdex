@@ -64,6 +64,11 @@ inline string gbk_to_utf8(const string &gbk)
 	return utf16_to_utf8(gbk_to_utf16(gbk));
 }
 
+inline string utf8_to_locale(const string &utf8)
+{
+	return utf16_to_gbk(utf8_to_utf16(utf8));
+}
+
 #else
 
 inline wstring utf8_to_utf16(const string &utf8)
@@ -190,6 +195,11 @@ inline string gbk_to_utf8(const string &gbk)
 
 	utf8.resize(utf8.size()-outlen);
 	return std::move(utf8);
+}
+
+inline string utf8_to_locale(const string &utf8)
+{
+	return utf8;
 }
 
 #endif
