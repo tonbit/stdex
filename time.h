@@ -18,28 +18,59 @@ inline uint64_t get_time_tick()
 #endif
 }
 
+inline string to_time_spec(std::time_t t, const string &format)
+{
+#ifndef _MSC_VER
+	char buf[128];
+	strftime(buf, sizeof(buf), format.c_str(), localtime(&t));
+	return buf;
+#else
+	std::stringstream ss;
+	ss << std::put_time(localtime(&t), format.c_str());
+	return ss.str();
+#endif
+}
+
 inline string to_time_compact(std::time_t t)
 {
+#ifndef _MSC_VER
+	char buf[128];
+	strftime(buf, sizeof(buf), "%Y%m%d%H%M%S", localtime(&t));
+	return buf;
+#else
 	std::stringstream ss;
 	ss << std::put_time(localtime(&t), "%Y%m%d%H%M%S");
 	return ss.str();
+#endif
 }
 
 //ISO 8601
 inline string to_time_iso(std::time_t t)
 {
+#ifndef _MSC_VER
+	char buf[128];
+	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", localtime(&t));
+	return buf;
+#else
 	std::stringstream ss;
 	ss << std::put_time(localtime(&t), "%Y-%m-%d %H:%M:%S");
 	return ss.str();
+#endif
 }
 
 //ISO 8601
 inline time_t from_time_iso(const string &in)
 {
+#ifndef _MSC_VER
+	std::tm tm;
+	strptime(in.c_str(), "%Y-%m-%d %H:%M:%S", &tm);
+	return mktime(&tm);
+#else
 	std::tm tm;
 	std::stringstream ss(in);
 	ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
 	return mktime(&tm);
+#endif
 }
 
 }
