@@ -10,7 +10,11 @@ public:
 	Logger()
     {
         _level = 7;
-        _debug = true;
+#ifdef _MSC_VER
+		_debug = true;
+#else
+		_debug = false;
+#endif
     }
 
 	~Logger()
