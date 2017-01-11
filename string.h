@@ -293,7 +293,7 @@ inline int rsa_pub_decrypt(const string &key_path, const string &encrypted, stri
 inline string randstr(size_t len)
 {
 	const char *seed = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-	size_t seed_len = 62; //10+26+26
+	const size_t seed_len = 62; //10+26+26
 
 	string tmp;
 	tmp.resize(len);
