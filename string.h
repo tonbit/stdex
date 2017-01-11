@@ -292,14 +292,15 @@ inline int rsa_pub_decrypt(const string &key_path, const string &encrypted, stri
 
 inline string randstr(size_t len)
 {
-	const char seed[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	const char *seed = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+	size_t seed_len = 62; //10+26+26
 
 	string tmp;
 	tmp.resize(len);
 
 	for (size_t i=0; i<len; i++)
 	{
-		tmp[i] = seed[rand() % sizeof(seed)];
+		tmp[i] = seed[rand() % seed_len];
 	}
 
 	return std::move(tmp);
