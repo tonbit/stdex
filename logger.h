@@ -81,6 +81,17 @@ public:
         va_end(args);
     }
 
+    void log_stat(const char *format, ...)
+    {
+        if (_level < 2)
+            return;
+
+        va_list args;
+        va_start(args, format);
+        write(2, "STA", format, args);
+        va_end(args);
+    }
+
     void log_error(const char *format, ...)
     {
         if (_level < 3)
