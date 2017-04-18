@@ -33,7 +33,7 @@ inline int get_host_addr(const string &host, string &addr)
     else if (he->h_addrtype == AF_INET6)
     {
 		if (inet_ntop(AF_INET6, he->h_addr, buf, sizeof(buf)) == NULL)
-			return 3; 
+			return 3;
     }
     else
     {
