@@ -15,7 +15,7 @@ public:
 
 	uint64_t passed()
 	{
-		return get_time_tick() - _begin();
+		return get_time_tick() - _begin;
 	}
 
 	void reset()
