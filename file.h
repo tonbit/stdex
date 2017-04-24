@@ -3,6 +3,12 @@
 
 #include "stdex/stdcc.h"
 #include <dirent.h>
+
+#ifdef _MSC_VER
+#include <io.h>
+#include <direct.h>
+#endif
+
 namespace stdex {
 namespace file {
 
@@ -61,6 +67,19 @@ inline int save_data(const string &path, const std::vector<char> &data)
         return 1;
 
 	file.write(&data[0], data.size());
+	file.close();
+    return 0;
+}
+
+inline int save_data(const string &path, const char *data, size_t size)
+{
+	std::ofstream file;
+
+	file.open(path, std::ios::out | std::ios::binary);
+	if (!file.is_open())
+        return 1;
+
+	file.write(data, size);
 	file.close();
     return 0;
 }
@@ -160,6 +179,110 @@ inline std::vector<string> list_dir(const string &path)
 
     closedir(dir);
     return std::move(tmp);
+}
+
+inline string dir_name(const string &path)
+{
+	size_t len = path.size();
+	size_t p1, p2 = len - 1;
+
+	while (!isalnum(path[p2]))
+	{
+		p2--;
+	}
+
+	p1 = p2 - 1;
+
+	while (isalnum(path[p1]))
+	{
+		p1--;
+	}
+
+	return path.substr(0, p1);
+}
+
+inline string base_name(const string &path)
+{
+	size_t len = path.size();
+	size_t p1, p2 = len - 1;
+
+	while (!isalnum(path[p2]))
+	{
+		p2--;
+	}
+
+	p1 = p2 - 1;
+
+	while (isalnum(path[p1]))
+	{
+		p1--;
+	}
+
+	return path.substr(p1 + 1, p2 - p1);
+}
+
+inline int make_dir(const string &dir)
+{
+#ifdef _MSC_VER
+
+	string updir = dir_name(dir);
+	if (_access(updir.c_str(), 06))
+	{
+		if (make_dir(updir.c_str()))
+			return 1;
+	}
+
+	if (_mkdir(dir.c_str()))
+		return 2;
+
+	return 0;
+
+#else
+
+	string updir = dir_name(dir);
+	if (access(updir.c_str(), R_OK|W_OK))
+	{
+		if (make_dir(updir.c_str()))
+			return 1;
+	}
+
+	if (mkdir(dir.c_str(), 0777))
+		return 2;
+
+	return 0;
+
+#endif
+}
+
+inline int remove_file(const string &src)
+{
+	return std::remove(src.c_str());
+}
+
+inline int copy_file(const string &src, const string &dst)
+{
+	std::vector<char> data = load_data(src);
+	if (data.empty())
+		return 1;
+
+	if (make_dir(dst))
+		return 2;
+
+	if (save_data(dst, data))
+		return 3;
+
+	return 0;
+}
+
+inline int move_file(const string &src, const string &dst)
+{
+	if (copy_file(src, dst))
+		return 1;
+
+	if (remove_file(src))
+		return 2;
+
+	return 0;
 }
 
 }

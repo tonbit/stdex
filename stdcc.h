@@ -59,6 +59,7 @@ typedef int socklen_t;
 #else //_MSC_VER
 
 #include <unistd.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>

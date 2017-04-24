@@ -13,7 +13,8 @@ namespace stdex {
 
 inline void sleep(int ms)
 {
-    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+	if (ms >= 0)
+	    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
 inline int get_host_addr(const string &host, string &addr)
