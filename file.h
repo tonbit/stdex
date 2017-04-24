@@ -186,14 +186,14 @@ inline string dir_name(const string &path)
 	size_t len = path.size();
 	size_t p1, p2 = len - 1;
 
-	while (!isalnum(path[p2]))
+	while (path[p2] == '/')
 	{
 		p2--;
 	}
 
 	p1 = p2 - 1;
 
-	while (isalnum(path[p1]))
+	while (path[p1] != '/')
 	{
 		p1--;
 	}
@@ -206,14 +206,14 @@ inline string base_name(const string &path)
 	size_t len = path.size();
 	size_t p1, p2 = len - 1;
 
-	while (!isalnum(path[p2]))
+	while (path[p2] == '/')
 	{
 		p2--;
 	}
 
 	p1 = p2 - 1;
 
-	while (isalnum(path[p1]))
+	while (path[p1] != '/')
 	{
 		p1--;
 	}
