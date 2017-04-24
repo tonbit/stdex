@@ -265,7 +265,7 @@ inline int copy_file(const string &src, const string &dst)
 	if (data.empty())
 		return 1;
 
-	if (make_dir(dst))
+	if (make_dir(dir_name(dst)))
 		return 2;
 
 	if (save_data(dst, data))
