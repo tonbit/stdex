@@ -225,29 +225,35 @@ inline int make_dir(const string &dir)
 {
 #ifdef _MSC_VER
 
-	string updir = dir_name(dir);
-	if (_access(updir.c_str(), 06))
+	if (access(dir.c_str(), R_OK|W_OK))
 	{
-		if (make_dir(updir.c_str()))
-			return 1;
-	}
+		string updir = dir_name(dir);
+		if (_access(updir.c_str(), 06))
+		{
+			if (make_dir(updir.c_str()))
+				return 1;
+		}
 
-	if (_mkdir(dir.c_str()))
-		return 2;
+		if (_mkdir(dir.c_str()))
+			return 2;
+	}
 
 	return 0;
 
 #else
 
-	string updir = dir_name(dir);
-	if (access(updir.c_str(), R_OK|W_OK))
+	if (access(dir.c_str(), R_OK|W_OK))
 	{
-		if (make_dir(updir.c_str()))
-			return 1;
-	}
+		string updir = dir_name(dir);
+		if (access(updir.c_str(), R_OK|W_OK))
+		{
+			if (make_dir(updir.c_str()))
+				return 1;
+		}
 
-	if (mkdir(dir.c_str(), 0777))
-		return 2;
+		if (mkdir(dir.c_str(), 0777))
+			return 2;
+	}
 
 	return 0;
 
