@@ -235,7 +235,7 @@ inline int make_dir(const string &dir)
 		}
 
 		if (_mkdir(dir.c_str()))
-			return 2;
+			return 1;
 	}
 
 	return 0;
@@ -252,7 +252,7 @@ inline int make_dir(const string &dir)
 		}
 
 		if (mkdir(dir.c_str(), 0777))
-			return 2;
+			return 1;
 	}
 
 	return 0;
@@ -282,11 +282,12 @@ inline int copy_file(const string &src, const string &dst)
 
 inline int move_file(const string &src, const string &dst)
 {
-	if (copy_file(src, dst))
-		return 1;
+	int ret = copy_file(src, dst);
+	if (ret)
+		return ret;
 
 	if (remove_file(src))
-		return 2;
+		return 4;
 
 	return 0;
 }
