@@ -11,20 +11,32 @@ public:
 	Chrono()
 	{
 		_begin = get_time_tick();
+		_passed = 0;
+	}
+
+	void stop()
+	{
+		if (_passed == 0)
+			_passed = get_time_tick() - _begin;
 	}
 
 	uint64_t passed()
 	{
-		return get_time_tick() - _begin;
+		if (_passed == 0)
+			return get_time_tick() - _begin;
+		else
+			return _passed;
 	}
 
 	void reset()
 	{
 		_begin = get_time_tick();
+		_passed = 0;
 	}
 
 private:
 	uint64_t _begin;
+	uint64_t _passed;
 };
 
 }
