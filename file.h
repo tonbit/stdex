@@ -228,14 +228,11 @@ inline int make_dir(const string &dir)
 	if (_access(dir.c_str(), 06))
 	{
 		string updir = dir_name(dir);
-		if (_access(updir.c_str(), 06))
-		{
-			if (make_dir(updir.c_str()))
-				return 1;
-		}
+		if (make_dir(updir.c_str()))
+			return 1;
 
 		if (_mkdir(dir.c_str()))
-			return 1;
+			return 2;
 	}
 
 	return 0;
@@ -245,14 +242,11 @@ inline int make_dir(const string &dir)
 	if (access(dir.c_str(), R_OK|W_OK))
 	{
 		string updir = dir_name(dir);
-		if (access(updir.c_str(), R_OK|W_OK))
-		{
-			if (make_dir(updir.c_str()))
-				return 1;
-		}
+		if (make_dir(updir.c_str()))
+			return 1;
 
 		if (mkdir(dir.c_str(), 0777))
-			return 1;
+			return 2;
 	}
 
 	return 0;

@@ -2,6 +2,8 @@
 #define STDEX_LOGGER_H_
 
 #include "stdex/stdcc.h"
+#include <atomic>
+
 namespace stdex {
 
 class Logger
@@ -50,6 +52,8 @@ public:
 
     void log_fatal(const char *format, ...)
     {
+    	alert_count++;
+
         if (_level < 0)
             return;
 
@@ -61,6 +65,8 @@ public:
 
     void log_emerg(const char *format, ...)
     {
+    	alert_count++;
+
         if (_level < 1)
             return;
 
@@ -72,6 +78,8 @@ public:
 
     void log_alert(const char *format, ...)
     {
+    	alert_count++;
+
         if (_level < 2)
             return;
 
@@ -94,6 +102,8 @@ public:
 
     void log_error(const char *format, ...)
     {
+    	error_count++;
+
         if (_level < 3)
             return;
 
@@ -147,10 +157,28 @@ public:
         va_end(args);
     }
 
+    void reset_count()
+    {
+    	alert_count = 0;
+    	error_count = 0;
+    }
+
+    int get_alert_count()
+    {
+    	return alert_count;
+    }
+
+    int get_error_count()
+    {
+    	return error_count;
+    }
+
 private:
     std::ofstream _file;
     int _level;
     bool _debug;
+    std::atomic<int> alert_count;
+    std::atomic<int> error_count;
 
     void write(int level, const char *title, const char *fmt, va_list args)
     {

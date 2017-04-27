@@ -67,19 +67,6 @@ inline string get_path_separator()
 #endif
 }
 
-template<typename Map>
-inline void merge(Map &m1, const Map &m2)
-{
-	for(auto &p: m2)
-	{
-		if (m1.find(p.first) == m1.end())
-		{
-			m1.insert(p);
-		}
-	}
-}
-
-
 
 }
 #endif //STDEX_MISC_H_

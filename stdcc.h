@@ -82,6 +82,5 @@ using std::wstring;
 typedef unsigned char byte;
 typedef unsigned long ulong;
 typedef unsigned short ushort;
-typedef std::map<string, string> DataMap;
 
 #endif //STDEX_STDCC_H_
