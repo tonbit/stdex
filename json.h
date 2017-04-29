@@ -192,6 +192,12 @@ public:
         _number = val;
     }
 
+    inline void set_string(const string &val)
+    {
+        _type = TYPE_STRING;
+        _string = val;
+    }
+
     inline bool get_boolean() const
     {
         return _boolean;
@@ -693,7 +699,7 @@ private:
 
         while (*cur)
         {
-            string label, value;
+            string label;
             Value sub;
 
             off = parse_ws(cur);
@@ -832,7 +838,68 @@ private:
         off = parse_ws(cur);
         cur += off;
 
-        if (*cur == '{')
+		if (*cur == 'n')
+		{
+			off = parse_null(cur);
+			if (off < 0)
+				return -1;
+			cur += off;
+		}
+		else if (*cur == 't')
+		{
+			off = parse_true(cur);
+			if (off < 0)
+				return -1;
+
+			set_boolean(true);
+			cur += off;
+		}
+		else if (*cur == 'f')
+		{
+			off = parse_false(cur);
+			if (off < 0)
+				return -1;
+
+			set_boolean(false);
+			cur += off;
+		}
+		else if (::isdigit(*cur) || *cur == '+' || *cur == '-')
+		{
+			double tmp;
+
+			off = parse_number(cur, tmp);
+			if (off < 0)
+				return -1;
+
+			set_number(tmp);
+			cur += off;
+		}
+		else if (*cur == '"')
+		{
+			cur += 1;
+
+			off = parse_string(cur);
+			if (off < 0)
+				return -1;
+
+			set_string(unescape(cur, off));
+			cur += off;
+
+			if (*cur != '"')
+				return -1;
+			cur += 1;
+		}
+		else if (*cur == '[')
+		{
+			_type = TYPE_ARRAY;
+
+			off = parse_array(cur);
+			if (off < 0)
+				return -1;
+
+			cur += off;
+		}
+        else if (*cur == '{')
         {
             _type = TYPE_OBJECT;
 
@@ -842,15 +909,9 @@ private:
 
             cur += off;
         }
-        else if (*cur == '[')
+        else if (*cur == '\0')
         {
-            _type = TYPE_ARRAY;
-
-            off = parse_array(cur);
-            if (off < 0)
-                return -1;
-
-            cur += off;
+        	return cur - str;
         }
         else
         {
