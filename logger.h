@@ -50,6 +50,11 @@ public:
         _level=level;
     }
 
+    int get_level()
+    {
+    	return _level;
+    }
+
     void log_fatal(const char *format, ...)
     {
     	alert_count++;
@@ -209,7 +214,10 @@ private:
 
         if (_file)
 		{
-            _file << buf << std::flush;
+			if (_level < 7)
+	            _file << buf;
+	        else
+	            _file << buf << std::flush;
 		}
     }
 };
