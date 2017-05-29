@@ -3,6 +3,7 @@
 
 #include "stdex/stdcc.h"
 #include "stdex/string.h"
+#include "stdex/crypt.h"
 #include "stdex/base64.h"
 #include "stdex/file.h"
 namespace stdex {
