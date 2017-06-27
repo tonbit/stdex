@@ -169,7 +169,7 @@ public:
     inline Value &operator[](size_t i)
     {
     	if (_type == TYPE_NULL)
-    		_type = TYPE_OBJECT;
+    		_type = TYPE_ARRAY;
 
 		assert(_type == TYPE_ARRAY);
 
