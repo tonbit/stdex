@@ -61,6 +61,9 @@ inline string to_time_iso(std::time_t t)
 //ISO 8601
 inline time_t from_time_iso(const string &in)
 {
+	if (in.empty())
+		return 0;
+
 #ifndef _MSC_VER
 	std::tm tm;
 	strptime(in.c_str(), "%Y-%m-%d %H:%M:%S", &tm);
