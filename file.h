@@ -161,6 +161,38 @@ inline int save_lines(const string &path, const std::vector<string> &lines)
     return 0;
 }
 
+inline std::map<string,string> load_map(const string &path, char sep=',')
+{
+	std::ifstream file;
+	std::map<string,string> map;
+
+	file.open(path);
+	if (!file.is_open())
+		return std::move(map);
+
+    char buf[128];
+	string line;
+
+    while (!file.eof())
+    {
+		file.getline(buf, sizeof(buf));
+		line.append(buf);
+
+		if (file.rdstate() == std::ios_base::failbit)
+		{
+			file.clear();
+			continue;
+		}
+
+		string::size_type pos = line.find_first_of(sep);
+		map[line.substr(0, pos)] = line.substr(pos+1);
+		line.resize(0);
+    }
+
+	file.close();
+    return std::move(map);
+}
+
 inline std::vector<string> list_dir(const string &path)
 {
 	DIR *dir;
