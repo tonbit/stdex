@@ -178,6 +178,63 @@ inline string join(std::vector<string> &vec, char sep)
     return std::move(str);
 }
 
+inline std::set<string> split_set(const string &str, char sep)
+{
+    string::size_type pos1 = 0;
+    string::size_type pos2 = 0;
+	string::size_type len = str.length();
+	std::set<string> set;
+
+	while (true)
+    {
+        if (pos1 >= len)
+        {
+            set.insert("");
+            break;
+        }
+
+        pos2 = str.find_first_of(sep, pos1);
+        if (pos2 == string::npos)
+        {
+            set.insert(trim(str.substr(pos1, string::npos)));
+            break;
+        }
+        else
+        {
+            set.insert(trim(str.substr(pos1, pos2-pos1)));
+            pos1 = pos2+1;
+        }
+    }
+
+    return std::move(set);
+}
+
+inline string join_set(std::set<string> &set, char sep)
+{
+	string str;
+    std::set<string>::iterator it;
+
+    it = set.begin();
+    if (it != set.end())
+    {
+        str = *it;
+        it++;
+    }
+    else
+    {
+        return str;
+    }
+
+    while (it != set.end())
+    {
+        str += sep;
+        str += *it;
+        it++;
+    }
+
+    return std::move(str);
+}
+
 inline string to_string(bool val)
 {
     if (val)
