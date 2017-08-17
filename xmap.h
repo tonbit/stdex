@@ -218,7 +218,31 @@ private:
 			off = parse_ws(cur);
 			cur += off;
 
-			if (*cur == '"')
+			if (*cur == 'n')
+			{
+				if (memcmp("null", cur, 4) != 0)
+					return -1;
+
+				value.assign("");
+				cur += 4;
+			}
+			else if (*cur == 't')
+			{
+				if (memcmp("true", cur, 4) != 0)
+					return -1;
+
+				value.assign("true");
+				cur += 4;
+			}
+			else if (*cur == 'f')
+			{
+				if (memcmp("false", cur, 5) != 0)
+					return -1;
+
+				value.assign("false");
+					cur += 5;
+			}
+			else if (*cur == '"')
 			{
 				cur += 1;
 

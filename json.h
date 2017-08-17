@@ -17,7 +17,9 @@ public:
     {
         _type = other._type;
 
-        if (_type == TYPE_NUMBER)
+        if (_type == TYPE_BOOLEAN)
+            _boolean = other._boolean;
+        else if (_type == TYPE_NUMBER)
             _number = other._number;
         else if (_type == TYPE_STRING)
             _string = other._string;
@@ -31,7 +33,9 @@ public:
     {
         _type = other._type;
 
-        if (_type == TYPE_NUMBER)
+        if (_type == TYPE_BOOLEAN)
+            _boolean = other._boolean;
+        else if (_type == TYPE_NUMBER)
             _number = other._number;
         else if (_type == TYPE_STRING)
             _string = std::move(other._string);
@@ -55,7 +59,9 @@ public:
     {
         _type = other._type;
 
-        if (_type == TYPE_NUMBER)
+        if (_type == TYPE_BOOLEAN)
+            _boolean = other._boolean;
+        else if (_type == TYPE_NUMBER)
             _number = other._number;
         else if (_type == TYPE_STRING)
             _string = other._string;
@@ -71,7 +77,9 @@ public:
     {
         _type = other._type;
 
-        if (_type == TYPE_NUMBER)
+        if (_type == TYPE_BOOLEAN)
+            _boolean = other._boolean;
+        else if (_type == TYPE_NUMBER)
             _number = other._number;
         else if (_type == TYPE_STRING)
             _string = std::move(other._string);
@@ -359,7 +367,7 @@ private:
 
 		while (len > 0)
 		{
-			if (!iscntrl(str[0]) && str[0]!='"' && str[0]!='\\')
+			if ((str[0]<0 || str[0]>0x1f) && str[0]!='"' && str[0]!='\\')
 			{
 				ret += str[0];
 			}
