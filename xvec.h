@@ -1,121 +1,106 @@
-#ifndef STDEX_XMAP_H_
-#define STDEX_XMAP_H_
+#ifndef STDEX_XVEC_H_
+#define STDEX_XVEC_H_
 
 #include "stdex/stdcc.h"
 
 namespace stdex {
 
-class xmap
+class xvec
 {
 public:
-	xmap()
+	xvec()
 	{
 	}
 
-	xmap(const xmap &other)
+	xvec(const xvec &other)
 	{
-		_map = other._map;
+		_vec = other._vec;
 	}
 
-	xmap(xmap &&other)
+	xvec(xvec &&other)
 	{
-		_map = std::move(other._map);
+		_vec = std::move(other._vec);
 	}
 
-	xmap(const std::map<string,string> &map)
+	xvec(const std::vector<string> &vec)
 	{
-		_map = map;
+		_vec = vec;
 	}
 
-	xmap(std::map<string,string> &&map)
+	xvec(std::vector<string> &&vec)
 	{
-		_map = std::move(map);
+		_vec = std::move(vec);
 	}
 
-	xmap(const string &str)
+	xvec(const string &str)
 	{
 		parse(str);
 	}
 
-	xmap &operator=(const xmap &other)
+	xvec &operator=(const xvec &other)
     {
-		_map = other._map;
+		_vec = other._vec;
         return *this;
     }
 
-	xmap &operator=(xmap &&other)
+	xvec &operator=(xvec &&other)
     {
-		_map = std::move(other._map);
+		_vec = std::move(other._vec);
         return *this;
     }
 
-	xmap &operator=(const std::map<string,string> &map)
+	xvec &operator=(const std::vector<string> &vec)
     {
-		_map = map;
+		_vec = vec;
         return *this;
     }
 
-	xmap &operator=(std::map<string,string> &&map)
+	xvec &operator=(std::vector<string> &&vec)
     {
-		_map = std::move(map);
+		_vec = std::move(vec);
         return *this;
     }
 
-	xmap &operator=(const string &str)
+	xvec &operator=(const string &str)
     {
 		parse(str);
         return *this;
     }
 
-	void merge(const xmap &other)
+	void append(const xvec &other)
 	{
-		for(auto &p: other._map)
-		{
-			if (_map.find(p.first) == _map.end())
-			{
-				_map.insert(p);
-			}
-		}
+		_vec.insert(_vec.end(), other._vec.begin(), other._vec.end());
 	}
 
-	void merge(const std::map<string,string> &map)
+	void append(const std::vector<string> &vec)
 	{
-		for(auto &p: map)
-		{
-			if (_map.find(p.first) == _map.end())
-			{
-				_map.insert(p);
-			}
-		}
+		_vec.insert(_vec.end(), vec.begin(), vec.end());
 	}
 
-	string &operator[](const string &key)
+	string &operator[](size_t i)
 	{
-		return _map[key];
+		return _vec[i];
 	}
 
 	inline string to_string()
 	{
 		string tmp;
-		tmp.append("{");
+		tmp.append("[");
 
-		for (auto &p : _map)
+		for (auto &s : _vec)
 		{
 			tmp.append("\"", 1);
-			tmp.append(p.first);
-			tmp.append("\":", 2);
-			tmp.append("\"", 1);
-			tmp.append(p.second);
+			tmp.append(s);
 			tmp.append("\",", 2);
 		}
 
 		if (tmp.back() == ',')
 		{
-			tmp.back() = '}';
+			tmp.back() = ']';
 		}
 		else
 		{
-			tmp.append("}");
+			tmp.append("]");
 		}
 
 		return std::move(tmp);
@@ -127,7 +112,7 @@ public:
 	}
 
 private:
-	std::map<string, string> _map;
+	std::vector<string> _vec;
 
 	int parse_ws(const char *str)
 	{
@@ -182,38 +167,13 @@ private:
 		if (*cur == '\0')
 			return cur - str;
 
-		if (*cur != '{')
+		if (*cur != '[')
 			return -1;
 		cur += 1;
 
 		while (*cur)
 		{
 			string label, value;
-
-			off = parse_ws(cur);
-			cur += off;
-
-			if (*cur != '"')
-				return -1;
-			cur += 1;
-
-			off = parse_str(cur);
-			if (off < 0)
-				return -1;
-
-			label.assign(cur, off);
-			cur += off;
-
-			if (*cur != '"')
-				return -1;
-			cur += 1;
-
-			off = parse_ws(cur);
-			cur += off;
-
-			if (*cur != ':')
-				return -1;
-			cur += 1;
 
 			off = parse_ws(cur);
 			cur += off;
@@ -240,7 +200,7 @@ private:
 					return -1;
 
 				value.assign("false");
-					cur += 5;
+				cur += 5;
 			}
 			else if (*cur == '"')
 			{
@@ -267,7 +227,7 @@ private:
 				cur += off;
 			}
 
-			_map[label] = value;
+			_vec.push_back(value);
 
 			off = parse_ws(cur);
 			cur += off;
@@ -277,7 +237,7 @@ private:
 			cur += 1;
 		}
 
-		if (*cur != '}')
+		if (*cur != ']')
 			return -1;
 		cur += 1;
 
@@ -286,12 +246,10 @@ private:
 		return cur - str;
 	}
 
-
-
 };
 
 }
 
-using xmap_t = stdex::xmap;
+using xvec_t = stdex::xvec;
 
-#endif //STDEX_XMAP_H_
+#endif //STDEX_XVEC_H_

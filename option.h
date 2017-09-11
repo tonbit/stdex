@@ -2,6 +2,7 @@
 #define STDEX_OPTION_H_
 
 #include "stdex/stdcc.h"
+#include "stdex/string.h"
 namespace stdex {
 
 //usage: app [options]
