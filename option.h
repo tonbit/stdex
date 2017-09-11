@@ -31,12 +31,12 @@ public:
 			{
 				if (i+1 < argc && argv[i+1][0] != '-')
 				{
-					_arguments[argv[i]] = argv[i+1];
+					_arguments[argv[i] + 1] = argv[i+1];
 					i++;
 				}
 				else
 				{
-					_arguments[argv[i]] = "";
+					_arguments[argv[i] + 1] = "";
 				}
 			}
 		}
