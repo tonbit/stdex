@@ -152,6 +152,45 @@ inline std::vector<string> split(const string &str, char sep)
     return std::move(vec);
 }
 
+inline std::vector<string> split(const string &str, char sep, int maxp)
+{
+    string::size_type pos1 = 0;
+    string::size_type pos2 = 0;
+	string::size_type len = str.length();
+	std::vector<string> vec;
+	int nump = 1;
+
+	while (true)
+    {
+		if (nump >= maxp)
+		{
+			vec.push_back(trim(str.substr(pos1, string::npos)));
+            break;
+		}
+
+        if (pos1 >= len)
+        {
+            vec.push_back("");
+            break;
+        }
+
+        pos2 = str.find_first_of(sep, pos1);
+        if (pos2 == string::npos)
+        {
+            vec.push_back(trim(str.substr(pos1, string::npos)));
+            break;
+        }
+        else
+        {
+            vec.push_back(trim(str.substr(pos1, pos2-pos1)));
+            pos1 = pos2+1;
+            nump += 1;
+        }
+    }
+
+    return std::move(vec);
+}
+
 inline string join(std::vector<string> &vec, char sep)
 {
 	string str;
