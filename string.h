@@ -162,17 +162,17 @@ inline std::vector<string> split(const string &str, char sep, int maxp)
 
 	while (true)
     {
-		if (nump >= maxp)
-		{
-			vec.push_back(trim(str.substr(pos1, string::npos)));
-            break;
-		}
-
         if (pos1 >= len)
         {
             vec.push_back("");
             break;
         }
+
+		if (nump >= maxp)
+		{
+			vec.push_back(trim(str.substr(pos1, string::npos)));
+            break;
+		}
 
         pos2 = str.find_first_of(sep, pos1);
         if (pos2 == string::npos)
