@@ -69,6 +69,11 @@ inline string utf8_to_locale(const string &utf8)
 	return utf16_to_gbk(utf8_to_utf16(utf8));
 }
 
+inline string locale_to_utf8(const string &loc)
+{
+	return utf16_to_utf8(gbk_to_utf16(loc));
+}
+
 #else
 
 inline wstring utf8_to_utf16(const string &utf8)
@@ -200,6 +205,11 @@ inline string gbk_to_utf8(const string &gbk)
 inline string utf8_to_locale(const string &utf8)
 {
 	return utf8;
+}
+
+inline string locale_to_utf8(const string &loc)
+{
+	return loc;
 }
 
 #endif

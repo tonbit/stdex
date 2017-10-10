@@ -315,7 +315,6 @@ public:
     string serialize()
     {
         string tmp;
-        tmp.reserve(4096);
         generate(tmp);
         return tmp;
     }
