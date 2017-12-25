@@ -76,5 +76,18 @@ inline time_t from_time_iso(const string &in)
 #endif
 }
 
+inline string to_time_gmt(std::time_t t)
+{
+#ifndef _MSC_VER
+	char buf[128];
+	strftime(buf, sizeof(buf), "%a, %d %b %Y %H:%M:%S GMT", localtime(&t));
+	return buf;
+#else
+	std::stringstream ss;
+	ss << std::put_time(localtime(&t), "%a, %d %b %Y %H:%M:%S GMT");
+	return ss.str();
+#endif
+}
+
 }
 #endif //STDEX_TIME_H_

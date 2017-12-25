@@ -8,8 +8,27 @@
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
 #include <openssl/err.h>
+#include <openssl/hmac.h>
 
 namespace stdex {
+	
+inline string to_md5_raw(const string &in)
+{
+    string str;
+    str.resize(16);
+
+    MD5((const unsigned char *)in.c_str(), in.length(), (unsigned char *)&str[0]);
+    return std::move(str);
+}
+
+inline string to_md5_raw(const std::vector<char> &in)
+{
+	string str;
+	str.resize(16);
+
+	MD5((const unsigned char *)&in[0], in.size(), (unsigned char *)&str[0]);
+	return std::move(str);
+}
 
 inline string to_md5(const string &in)
 {
@@ -25,6 +44,15 @@ inline string to_md5(const string &in)
     return std::move(str);
 }
 
+inline string to_sha1_raw(const string &in)
+{
+    string str;
+    str.resize(20);
+
+    SHA1((const unsigned char *)in.c_str(), in.length(), (unsigned char *)&str[0]);
+    return std::move(str);
+}
+
 inline string to_sha1(const string &in)
 {
     string str;
@@ -37,6 +65,17 @@ inline string to_sha1(const string &in)
         out[0],out[1],out[2],out[3],out[4],out[5],out[6],out[7],out[8],out[9],out[10],out[11],out[12],out[13],out[14],out[15],out[16],out[17],out[18],out[19]);
 
     return std::move(str);
+}
+
+inline string hmac_sha1(const string &key, const string &data)
+{
+	string str;
+    str.resize(20);
+	unsigned int len = 20;
+	HMAC(EVP_sha1(), key.c_str(), key.size(), 
+		(const unsigned char *)data.c_str(), data.size(), 
+		(unsigned char *)&str[0], &len);
+	return std::move(str);
 }
 
 inline int rsa_pri_encrypt(const string &key_path, const string &raw, string &encrypted)
