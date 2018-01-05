@@ -11,7 +11,7 @@
 #include <openssl/hmac.h>
 
 namespace stdex {
-	
+
 inline string to_md5_raw(const string &in)
 {
     string str;
@@ -32,16 +32,14 @@ inline string to_md5_raw(const std::vector<char> &in)
 
 inline string to_md5(const string &in)
 {
-    string str;
-    str.resize(32);
+    char out[64];
+    unsigned char raw[16];
+    MD5((const unsigned char *)in.c_str(), in.length(), raw);
 
-    unsigned char out[16];
-    MD5((const unsigned char *)in.c_str(), in.length(), out);
+    snprintf(out, sizeof(out), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+        raw[0],raw[1],raw[2],raw[3],raw[4],raw[5],raw[6],raw[7],raw[8],raw[9],raw[10],raw[11],raw[12],raw[13],raw[14],raw[15]);
 
-    snprintf(&str[0], str.size(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-        out[0],out[1],out[2],out[3],out[4],out[5],out[6],out[7],out[8],out[9],out[10],out[11],out[12],out[13],out[14],out[15]);
-
-    return std::move(str);
+    return string(out);
 }
 
 inline string to_sha1_raw(const string &in)
@@ -55,16 +53,14 @@ inline string to_sha1_raw(const string &in)
 
 inline string to_sha1(const string &in)
 {
-    string str;
-    str.resize(40);
+    char out[64];
+    unsigned char raw[20];
+    SHA1((const unsigned char *)in.c_str(), in.length(), raw);
 
-    unsigned char out[20];
-    SHA1((const unsigned char *)in.c_str(), in.length(), out);
+    snprintf(out, sizeof(out), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+        raw[0],raw[1],raw[2],raw[3],raw[4],raw[5],raw[6],raw[7],raw[8],raw[9],raw[10],raw[11],raw[12],raw[13],raw[14],raw[15],raw[16],raw[17],raw[18],raw[19]);
 
-    snprintf(&str[0], str.size(), "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-        out[0],out[1],out[2],out[3],out[4],out[5],out[6],out[7],out[8],out[9],out[10],out[11],out[12],out[13],out[14],out[15],out[16],out[17],out[18],out[19]);
-
-    return std::move(str);
+    return string(out);
 }
 
 inline string hmac_sha1(const string &key, const string &data)
@@ -72,8 +68,8 @@ inline string hmac_sha1(const string &key, const string &data)
 	string str;
     str.resize(20);
 	unsigned int len = 20;
-	HMAC(EVP_sha1(), key.c_str(), key.size(), 
-		(const unsigned char *)data.c_str(), data.size(), 
+	HMAC(EVP_sha1(), key.c_str(), key.size(),
+		(const unsigned char *)data.c_str(), data.size(),
 		(unsigned char *)&str[0], &len);
 	return std::move(str);
 }
