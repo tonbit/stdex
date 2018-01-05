@@ -326,6 +326,18 @@ inline int move_file(const string &src, const string &dst)
 	return 0;
 }
 
+inline int access_file(const string &path)
+{
+	std::ifstream file;
+	file.open(path);
+
+	if (!file.is_open())
+		return 1;
+
+    file.close();
+	return 0;
+}
+
 }
 }
 #endif //STDEX_FILE_H_
