@@ -95,6 +95,21 @@ public:
         return std::vector<string>();
     }
 
+	string decrypt(const string &pem, const string &value)
+	{
+		if (!pem.empty() && startof(value, "RSA!"))
+		{
+#ifdef STDEX_HAS_OPENSSL
+			string encrypted = value.substr(4, value.size() - 4);
+			string decrypted;
+			rsa_pub_decrypt(pem, stdex::Base64::decode(encrypted), decrypted);
+			return std::move(decrypted);
+#endif
+		}
+
+		return value;
+	}
+
 private:
     std::map<string, string> _items;
 
@@ -137,20 +152,6 @@ private:
         return sum;
     }
 
-    string decrypt(const string &pem, const string &value)
-    {
-		if (startof(value, "RSA!"))
-		{
-#ifdef STDEX_HAS_OPENSSL
-			string encrypted = value.substr(4, value.size() - 4);
-			string decrypted;
-			rsa_pub_decrypt(pem, stdex::Base64::decode(encrypted), decrypted);
-			return std::move(decrypted);
-#endif
-		}
-
-		return value;
-    }
 };
 
 }

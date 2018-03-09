@@ -193,6 +193,9 @@ private:
 			off = parse_ws(cur);
 			cur += off;
 
+			if (*cur == '}')
+				break;
+
 			if (*cur != '"')
 				return -1;
 			cur += 1;
