@@ -25,9 +25,14 @@ inline string to_time_spec(std::time_t t, const string &format)
 	strftime(buf, sizeof(buf), format.c_str(), localtime(&t));
 	return buf;
 #else
+	char buf[128];
+	strftime(buf, sizeof(buf), format.c_str(), localtime(&t));
+	return buf;
+#if 0
 	std::stringstream ss;
 	ss << std::put_time(localtime(&t), format.c_str());
 	return ss.str();
+#endif
 #endif
 }
 
@@ -38,9 +43,14 @@ inline string to_time_compact(std::time_t t)
 	strftime(buf, sizeof(buf), "%Y%m%d%H%M%S", localtime(&t));
 	return buf;
 #else
+	char buf[128];
+	strftime(buf, sizeof(buf), "%Y%m%d%H%M%S", localtime(&t));
+	return buf;
+#if 0
 	std::stringstream ss;
 	ss << std::put_time(localtime(&t), "%Y%m%d%H%M%S");
 	return ss.str();
+#endif
 #endif
 }
 
@@ -52,9 +62,14 @@ inline string to_time_iso(std::time_t t)
 	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", localtime(&t));
 	return buf;
 #else
+	char buf[128];
+	strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", localtime(&t));
+	return buf;
+#if 0
 	std::stringstream ss;
 	ss << std::put_time(localtime(&t), "%Y-%m-%d %H:%M:%S");
 	return ss.str();
+#endif
 #endif
 }
 
