@@ -39,7 +39,7 @@ inline size_t file_size(const string &path)
     return static_cast<size_t>(size);
 }
 
-inline std::vector<char> load_data(const string &path)
+inline std::vector<char> load_data(const string &path, std::streamoff offset=0)
 {
 	std::ifstream file;
 	std::vector<char> data;
@@ -50,9 +50,12 @@ inline std::vector<char> load_data(const string &path)
 
 	file.seekg(0, std::ios_base::end);
 	std::streamoff size = file.tellg();
-    data.resize(static_cast<size_t>(size));
+	if (size <= offset)
+		return std::move(data);
 
-	file.seekg(0, std::ios_base::beg);
+	size = size-offset;
+    data.resize(static_cast<size_t>(size));
+	file.seekg(offset, std::ios_base::beg);
 	file.read(&data[0], size);
 	file.close();
 	return std::move(data);
