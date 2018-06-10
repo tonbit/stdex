@@ -89,6 +89,22 @@ public:
 		}
 	}
 
+	void cover(const xmap &other)
+	{
+		for(auto &p: other._map)
+		{
+			_map[p.first] = p.second;
+		}
+	}
+
+	void cover(const std::map<string,string> &map)
+	{
+		for(auto &p: map)
+		{
+			_map[p.first] = p.second;
+		}
+	}
+
 	string &operator[](const string &key)
 	{
 		return _map[key];
