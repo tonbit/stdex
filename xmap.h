@@ -94,6 +94,11 @@ public:
 		return _map[key];
 	}
 
+	string &at(const string &key)
+	{
+		return _map[key];
+	}
+
 	inline string to_string()
 	{
 		string tmp;
