@@ -105,6 +105,14 @@ public:
 		}
 	}
 
+	bool contain(const string &key)
+	{
+		if (_map.find(key) != _map.end())
+			return true;
+		else
+			return false;
+	}
+
 	string &operator[](const string &key)
 	{
 		return _map[key];
