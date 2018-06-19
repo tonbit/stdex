@@ -48,6 +48,7 @@ inline std::vector<char> load_data(const string &path, std::streamoff offset=0)
 	if (!file.is_open())
 		return std::move(data);
 
+	file.sync();
 	file.seekg(0, std::ios_base::end);
 	std::streamoff size = file.tellg();
 	if (size <= offset)
