@@ -2,6 +2,7 @@
 #define STDEX_LOGGER_H_
 
 #include "stdex/stdcc.h"
+#include <sys/timeb.h>
 #include <atomic>
 
 namespace stdex {
@@ -196,9 +197,20 @@ private:
         char *ptr = buf;
         int len = sizeof(buf);
 
-        time_t cur = time(NULL);
-        ret = strftime(ptr, len, "\n%m%d %H:%M:%S ", localtime(&cur));
-        ptr += ret;
+#ifdef _MSC_VER
+		struct _timeb tb;
+		_ftime(&tb);
+#else
+		struct timeb tb;
+		ftime(&tb);
+#endif
+
+		ret = strftime(ptr, len, "\n%Y%m%d %H:%M:%S.", localtime(&tb.time));
+		ptr += ret;
+        len -= ret;
+
+		ret = snprintf(ptr, len, "%03d ", tb.millitm);
+		ptr += ret;
         len -= ret;
 
         ret = snprintf(ptr, len, "%s: ", title);
