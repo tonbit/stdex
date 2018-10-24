@@ -52,7 +52,10 @@ inline std::vector<char> load_data(const string &path, std::streamoff offset=0)
 	file.seekg(0, std::ios_base::end);
 	std::streamoff size = file.tellg();
 	if (size <= offset)
+	{
+		file.close();
 		return std::move(data);
+	}
 
 	size = size-offset;
     data.resize(static_cast<size_t>(size));
