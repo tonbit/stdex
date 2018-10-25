@@ -67,6 +67,21 @@ inline string get_path_separator()
 #endif
 }
 
+inline int get_cpu_num()
+{
+#ifdef _MSC_VER
+
+	SYSTEM_INFO info;
+	GetSystemInfo(&info);
+	return info.dwNumberOfProcessors;
+
+#else
+
+	return sysconf(_SC_NPROCESSORS_ONLN);
+
+#endif
+}
+
 
 }
 #endif //STDEX_MISC_H_
