@@ -123,11 +123,14 @@ inline string trim(string &&str)
 
 inline std::vector<string> split(const string &str, char sep)
 {
+	std::vector<string> vec;
+
+	if (str.empty())
+		return vec;
+
     string::size_type pos1 = 0;
     string::size_type pos2 = 0;
 	string::size_type len = str.length();
-	std::vector<string> vec;
-
 	while (true)
     {
         if (pos1 >= len)
@@ -154,11 +157,14 @@ inline std::vector<string> split(const string &str, char sep)
 
 inline std::vector<string> split(const string &str, char sep, int maxp)
 {
+	std::vector<string> vec;
+
+	if (str.empty())
+		return vec;
+
     string::size_type pos1 = 0;
     string::size_type pos2 = 0;
 	string::size_type len = str.length();
-	std::vector<string> vec;
-	int nump = 1;
 
 	while (true)
     {
@@ -168,7 +174,7 @@ inline std::vector<string> split(const string &str, char sep, int maxp)
             break;
         }
 
-		if (nump >= maxp)
+		if (maxp == 1)
 		{
 			vec.push_back(trim(str.substr(pos1, string::npos)));
             break;
@@ -184,7 +190,7 @@ inline std::vector<string> split(const string &str, char sep, int maxp)
         {
             vec.push_back(trim(str.substr(pos1, pos2-pos1)));
             pos1 = pos2+1;
-            nump += 1;
+			maxp -= 1;
         }
     }
 
@@ -219,10 +225,14 @@ inline string join(std::vector<string> &vec, char sep)
 
 inline std::set<string> split_set(const string &str, char sep)
 {
+	std::set<string> set;
+
+	if (str.empty())
+		return set;
+
     string::size_type pos1 = 0;
     string::size_type pos2 = 0;
 	string::size_type len = str.length();
-	std::set<string> set;
 
 	while (true)
     {
