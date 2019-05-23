@@ -155,6 +155,11 @@ public:
 		return parse(str.c_str());
 	}
 
+	void clear()
+	{
+		_map.clear();
+	}
+
 private:
 	std::map<string, string> _map;
 
