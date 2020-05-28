@@ -190,17 +190,17 @@ inline std::vector<string> split(const string &str, char sep, int maxp)
         {
             vec.push_back(trim(str.substr(pos1, pos2-pos1)));
             pos1 = pos2+1;
-			maxp -= 1;
+			maxp--;
         }
     }
 
     return std::move(vec);
 }
 
-inline string join(std::vector<string> &vec, char sep)
+inline string join(const std::vector<string> &vec, char sep)
 {
 	string str;
-    std::vector<string>::iterator it;
+    std::vector<string>::const_iterator it;
 
     it = vec.begin();
     if (it != vec.end())
@@ -258,7 +258,7 @@ inline std::set<string> split_set(const string &str, char sep)
     return std::move(set);
 }
 
-inline string join_set(std::set<string> &set, char sep)
+inline string join_set(const std::set<string> &set, char sep)
 {
 	string str;
     std::set<string>::iterator it;
@@ -284,6 +284,57 @@ inline string join_set(std::set<string> &set, char sep)
     return std::move(str);
 }
 
+inline std::pair<string, string> split_pair(const string &str, char sep)
+{
+	std::pair<string, string> pair;
+
+	string::size_type pos = str.find_first_of(sep);
+	if (pos == string::npos)
+	{
+		pair = std::make_pair(str, string());
+	}
+	else
+	{
+		pair = std::make_pair(str.substr(0, pos), str.substr(pos+1));
+	}
+
+	return pair;
+}
+
+inline std::map<string, string> split_map(const string &str, char sep1, char sep2)
+{
+	std::map<string, string> map;
+
+	if (str.empty())
+		return map;
+
+    string::size_type pos1 = 0;
+    string::size_type pos2 = 0;
+	string::size_type len = str.length();
+
+	while (true)
+    {
+        if (pos1 >= len)
+        {
+            break;
+        }
+
+        pos2 = str.find_first_of(sep1, pos1);
+        if (pos2 == string::npos)
+        {
+            map.insert(split_pair(str.substr(pos1, string::npos), sep2));
+            break;
+        }
+        else
+        {
+            map.insert(split_pair(str.substr(pos1, pos2-pos1), sep2));
+            pos1 = pos2+1;
+        }
+    }
+
+    return std::move(map);
+}
+
 inline string to_string(bool val)
 {
     if (val)
@@ -306,6 +357,19 @@ inline string randstr(size_t len)
 	}
 
 	return std::move(tmp);
+}
+
+inline int hash_code(const string &str)
+{
+	int x = 0;
+	size_t len = str.size();
+
+	for (size_t i=0; i<len; i++)
+	{
+		x = (x << 5) - x + (int)str[i];
+	}
+
+	return x;
 }
 
 inline string format(const string &fmt, const std::vector<string> &args)

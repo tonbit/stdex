@@ -71,10 +71,15 @@ public:
 	{
 		for(auto &p: other._map)
 		{
-			if (_map.find(p.first) == _map.end())
-			{
-				_map.insert(p);
-			}
+			_map.insert(p);
+		}
+	}
+
+	void merge(xmap &&other)
+	{
+		for(auto &p: other._map)
+		{
+			_map.insert(std::move(p));
 		}
 	}
 
@@ -82,10 +87,7 @@ public:
 	{
 		for(auto &p: map)
 		{
-			if (_map.find(p.first) == _map.end())
-			{
-				_map.insert(p);
-			}
+			_map.insert(p);
 		}
 	}
 
@@ -94,6 +96,14 @@ public:
 		for(auto &p: other._map)
 		{
 			_map[p.first] = p.second;
+		}
+	}
+
+	void cover(xmap &&other)
+	{
+		for(auto &p: other._map)
+		{
+			_map[std::move(p.first)] = std::move(p.second);
 		}
 	}
 

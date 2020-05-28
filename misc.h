@@ -17,6 +17,37 @@ inline void sleep(int ms)
 	    std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
+inline string get_local_addr()
+{
+    int sock_fd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in remote_addr;
+    struct sockaddr_in local_addr;
+    char *local_ip = NULL;
+    socklen_t len = 0;
+
+    remote_addr.sin_family = AF_INET;
+    remote_addr.sin_port = htons(80);
+    remote_addr.sin_addr.s_addr = inet_addr("116.62.90.150");
+
+    len =  sizeof(struct sockaddr_in);
+    int status = connect(sock_fd, (struct sockaddr*)&remote_addr, len);
+    if(status != 0 ){
+        printf("connect err: %d\n", status);
+        return string();
+    }
+
+    getsockname(sock_fd, (struct sockaddr*)&local_addr, &len);
+
+    local_ip = inet_ntoa(local_addr.sin_addr);
+    if(local_ip == nullptr)
+    {
+        printf("inet_ntoa err: %d\n", errno);
+        return string();
+    }
+
+    return local_ip;
+}
+
 inline int get_host_addr(const string &host, string &addr)
 {
     struct hostent *he;

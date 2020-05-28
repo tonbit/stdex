@@ -163,6 +163,17 @@ public:
         va_end(args);
     }
 
+	void log_verbose(const char *format, ...)
+	{
+		if (_level < 8)
+			return;
+
+		va_list args;
+		va_start(args, format);
+		write(8, "VBS", format, args);
+		va_end(args);
+	}
+
     void reset_count()
     {
     	alert_count = 0;
