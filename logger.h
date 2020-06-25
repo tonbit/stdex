@@ -58,7 +58,7 @@ public:
 
     void log_fatal(const char *format, ...)
     {
-    	alert_count++;
+    	error_count++;
 
         if (_level < 0)
             return;
@@ -71,7 +71,7 @@ public:
 
     void log_emerg(const char *format, ...)
     {
-    	alert_count++;
+    	error_count++;
 
         if (_level < 1)
             return;
@@ -84,7 +84,7 @@ public:
 
     void log_alert(const char *format, ...)
     {
-    	alert_count++;
+    	error_count++;
 
         if (_level < 2)
             return;
@@ -121,6 +121,8 @@ public:
 
     void log_warn(const char *format, ...)
     {
+    	warn_count++;
+
         if (_level < 4)
             return;
 
@@ -176,16 +178,16 @@ public:
 
     void reset_count()
     {
-    	alert_count = 0;
     	error_count = 0;
-    }
-
-    int get_alert_count()
-    {
-    	return alert_count;
+    	warn_count = 0;
     }
 
     int get_error_count()
+    {
+    	return error_count;
+    }
+
+    int get_warn_count()
     {
     	return error_count;
     }
@@ -194,8 +196,8 @@ private:
     std::ofstream _file;
     int _level;
     bool _debug;
-    std::atomic<int> alert_count;
     std::atomic<int> error_count;
+    std::atomic<int> warn_count;
 
     void write(int level, const char *title, const char *fmt, va_list args)
     {

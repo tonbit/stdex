@@ -54,15 +54,15 @@ public:
         _deque.clear();
     }
 
-    inline size_t size()
+    inline size_t size() const
     {
-        std::unique_lock<std::mutex> lock(_mutex);
+        //std::unique_lock<std::mutex> lock(_mutex);
         return _deque.size();
     }
 
-    inline bool empty()
+    inline bool empty() const
     {
-        std::unique_lock<std::mutex> lock(_mutex);
+        //std::unique_lock<std::mutex> lock(_mutex);
         return _deque.empty();
     }
 
