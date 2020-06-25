@@ -7,7 +7,7 @@
 
 namespace stdex {
 
-thread_local static string _thread_id;
+thread_local static string _stdex_logger_thread_id = "xxx";
 
 class Logger
 {
@@ -45,7 +45,7 @@ public:
 
 	void set_thread_id(const string &tid)
 	{
-		_thread_id = tid;
+		_stdex_logger_thread_id = tid;
 	}
 
     void set_debug(bool debug)
@@ -229,7 +229,7 @@ private:
 		ptr += ret;
         len -= ret;
 
-		if (_thread_id.empty())
+		if (_stdex_logger_thread_id.empty())
 		{
 			ret = snprintf(ptr, len, "%03d %s: ", tb.millitm, title);
 			ptr += ret;
@@ -237,7 +237,7 @@ private:
 		}
 		else
 		{
-			ret = snprintf(ptr, len, "%03d %s %s: ", tb.millitm, _thread_id.c_str(), title);
+			ret = snprintf(ptr, len, "%03d %s %s: ", tb.millitm, _stdex_logger_thread_id.c_str(), title);
 			ptr += ret;
 			len -= ret;
 		}
