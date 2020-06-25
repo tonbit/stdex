@@ -7,6 +7,8 @@
 
 namespace stdex {
 
+thread_local static string _thread_id;
+
 class Logger
 {
 public:
@@ -198,7 +200,6 @@ public:
     }
 
 private:
-	thread_local static string _thread_id;
     std::ofstream _file;
     int _level;
     bool _debug;
