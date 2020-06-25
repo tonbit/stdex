@@ -5,9 +5,9 @@
 #include <sys/timeb.h>
 #include <atomic>
 
-namespace stdex {
+thread_local static string _stdex_logger_thread_id;
 
-thread_local static string _stdex_logger_thread_id = "xxx";
+namespace stdex {
 
 class Logger
 {
@@ -43,9 +43,14 @@ public:
             _file.close();
     }
 
-	void set_thread_id(const string &tid)
+	void set_thread_id(const string &id)
 	{
-		_stdex_logger_thread_id = tid;
+		_stdex_logger_thread_id = id;
+	}
+
+	string get_thread_id()
+	{
+		return _stdex_logger_thread_id;
 	}
 
     void set_debug(bool debug)
