@@ -41,6 +41,11 @@ public:
             _file.close();
     }
 
+	void set_thread_id(const string &tid)
+	{
+		_thread_id = tid;
+	}
+
     void set_debug(bool debug)
     {
         _debug=debug;
@@ -193,6 +198,7 @@ public:
     }
 
 private:
+	thread_local static string _thread_id;
     std::ofstream _file;
     int _level;
     bool _debug;
@@ -222,13 +228,18 @@ private:
 		ptr += ret;
         len -= ret;
 
-		ret = snprintf(ptr, len, "%03d ", tb.millitm);
-		ptr += ret;
-        len -= ret;
-
-        ret = snprintf(ptr, len, "%s: ", title);
-        ptr += ret;
-        len -= ret;
+		if (_thread_id.empty())
+		{
+			ret = snprintf(ptr, len, "%03d %s: ", tb.millitm, title);
+			ptr += ret;
+			len -= ret;
+		}
+		else
+		{
+			ret = snprintf(ptr, len, "%03d %s %s: ", tb.millitm, _thread_id.c_str(), title);
+			ptr += ret;
+			len -= ret;
+		}
 
         ret = vsnprintf(ptr, len, fmt, args);
 
