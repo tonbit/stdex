@@ -46,6 +46,7 @@ public:
 	void set_thread_id(const string &id)
 	{
 		_stdex_logger_thread_id = id;
+		log_notice("set thread id: %s %s", id.c_str(), _stdex_logger_thread_id.c_str());
 	}
 
 	string get_thread_id()
