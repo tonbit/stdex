@@ -206,13 +206,6 @@ public:
     	return error_count;
     }
 
-private:
-    std::ofstream _file;
-    int _level;
-    bool _debug;
-    std::atomic<int> error_count;
-    std::atomic<int> warn_count;
-
     void write(int level, const char *title, const char *fmt, va_list args)
     {
         if (!_debug && !_file)
@@ -264,6 +257,14 @@ private:
 	            _file << buf << std::flush;
 		}
     }
+
+private:
+    std::ofstream _file;
+    int _level;
+    bool _debug;
+    std::atomic<int> error_count;
+    std::atomic<int> warn_count;
+
 };
 
 }
