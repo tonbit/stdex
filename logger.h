@@ -229,15 +229,19 @@ public:
 		ptr += ret;
         len -= ret;
 
+		string id = get_thread_id();
+
 		if (_stdex_logger_thread_id.empty())
 		{
-			ret = snprintf(ptr, len, "%03d %s: ", tb.millitm, title);
+			ret = snprintf(ptr, len, "%03d %p %s %s %s: ", tb.millitm,
+				&_stdex_logger_thread_id, _stdex_logger_thread_id.c_str(), id.c_str(), title);
 			ptr += ret;
 			len -= ret;
 		}
 		else
 		{
-			ret = snprintf(ptr, len, "%03d %s %s: ", tb.millitm, _stdex_logger_thread_id.c_str(), title);
+			ret = snprintf(ptr, len, "%03d %p %s %s %s: ", tb.millitm,
+				&_stdex_logger_thread_id, _stdex_logger_thread_id.c_str(), id.c_str(), title);
 			ptr += ret;
 			len -= ret;
 		}
