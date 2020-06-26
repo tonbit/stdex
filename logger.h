@@ -4,6 +4,8 @@
 #include "stdex/stdcc.h"
 #include <sys/timeb.h>
 #include <atomic>
+#include <mutex>
+#include <thread>
 
 thread_local static string _stdex_logger_thread_id;
 
