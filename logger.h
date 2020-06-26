@@ -6,8 +6,12 @@
 #include <atomic>
 #include <mutex>
 #include <thread>
+#include "string.h"
+
+#include <sys/syscall.h>
 
 thread_local static string _stdex_logger_thread_id;
+thread_local static int my_id_int = 999;
 
 namespace stdex {
 
@@ -48,10 +52,15 @@ public:
 	void set_thread_id(const string &id)
 	{
 		_stdex_logger_thread_id = id;
+		my_id_int = hash_code(id);
+		log_info("tid SETTING !!!!!!!!!!!: %p, %s,%d",
+			&_stdex_logger_thread_id, _stdex_logger_thread_id.c_str(), my_id_int);
+
 	}
 
 	string get_thread_id()
 	{
+		log_info("tid: %p, %s, %d", &_stdex_logger_thread_id, _stdex_logger_thread_id.c_str(), my_id_int)
 		return _stdex_logger_thread_id;
 	}
 
@@ -230,18 +239,22 @@ public:
         len -= ret;
 
 		string id = get_thread_id();
+		pid_t pid = syscall(SYS_gettid);
 
 		if (_stdex_logger_thread_id.empty())
 		{
-			ret = snprintf(ptr, len, "%03d %p %s %s %s: ", tb.millitm,
-				&_stdex_logger_thread_id, _stdex_logger_thread_id.c_str(), id.c_str(), title);
+			ret = snprintf(ptr, len, "%03d %p %s %s - %d %d - %s: ", tb.millitm,
+				&_stdex_logger_thread_id, _stdex_logger_thread_id.c_str(), id.c_str(),
+				pid, my_id_int,
+				title);
 			ptr += ret;
 			len -= ret;
 		}
 		else
 		{
-			ret = snprintf(ptr, len, "%03d %p %s %s %s: ", tb.millitm,
-				&_stdex_logger_thread_id, _stdex_logger_thread_id.c_str(), id.c_str(), title);
+			ret = snprintf(ptr, len, "%03d %p %s %s - %d %d - %s: ", tb.millitm,
+				&_stdex_logger_thread_id, _stdex_logger_thread_id.c_str(), id.c_str(),
+				pid, my_id_int, title);
 			ptr += ret;
 			len -= ret;
 		}
