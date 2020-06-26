@@ -369,7 +369,7 @@ inline int hash_code(const string &str)
 		x = (x << 5) - x + (int)str[i];
 	}
 
-	return x;
+	return std::abs(x);
 }
 
 inline string format(const string &fmt, const std::vector<const string *> &args)
