@@ -8,11 +8,6 @@
 #include <thread>
 #include "string.h"
 
-#include <sys/syscall.h>
-
-thread_local static string _stdex_logger_thread_id;
-thread_local static int my_id_int = 999;
-
 namespace stdex {
 
 class Logger
@@ -48,21 +43,6 @@ public:
         if (_file.is_open())
             _file.close();
     }
-
-	void set_thread_id(const string &id)
-	{
-		_stdex_logger_thread_id = id;
-		my_id_int = hash_code(id);
-		log_info("tid SETTING !!!!!!!!!!!: %p, %s,%d",
-			&_stdex_logger_thread_id, _stdex_logger_thread_id.c_str(), my_id_int);
-
-	}
-
-	string get_thread_id()
-	{
-		log_info("tid: %p, %s, %d", &_stdex_logger_thread_id, _stdex_logger_thread_id.c_str(), my_id_int)
-		return _stdex_logger_thread_id;
-	}
 
     void set_debug(bool debug)
     {
@@ -215,16 +195,23 @@ public:
     	return error_count;
     }
 
-    void write(int level, const char *title, const char *fmt, va_list args)
-    {
-        if (!_debug && !_file)
-            return;
+private:
+    std::ofstream _file;
+    int _level;
+    bool _debug;
+    std::atomic<int> error_count;
+    std::atomic<int> warn_count;
 
-        char buf[4096];
-        int ret;
+	void write(int level, const char *title, const char *fmt, va_list args)
+	{
+		if (!_debug && !_file)
+			return;
 
-        char *ptr = buf;
-        int len = sizeof(buf);
+		char buf[4096];
+		int ret;
+
+		char *ptr = buf;
+		int len = sizeof(buf);
 
 #ifdef _MSC_VER
 		struct _timeb tb;
@@ -236,51 +223,30 @@ public:
 
 		ret = strftime(ptr, len, "\n%Y%m%d %H:%M:%S.", localtime(&tb.time));
 		ptr += ret;
-        len -= ret;
+		len -= ret;
 
-		string id = get_thread_id();
-		pid_t pid = syscall(SYS_gettid);
+		std::stringstream tid;
+		tid << std::this_thread::get_id();
 
-		if (_stdex_logger_thread_id.empty())
+		ret = snprintf(ptr, len, "%03d %s %s: ", tb.millitm, tid.str().c_str(), title);
+		ptr += ret;
+		len -= ret;
+
+		ret = vsnprintf(ptr, len, fmt, args);
+
+		if (_debug)
 		{
-			ret = snprintf(ptr, len, "%03d %p %s %s - %d %d - %s: ", tb.millitm,
-				&_stdex_logger_thread_id, _stdex_logger_thread_id.c_str(), id.c_str(),
-				pid, my_id_int,
-				title);
-			ptr += ret;
-			len -= ret;
-		}
-		else
-		{
-			ret = snprintf(ptr, len, "%03d %p %s %s - %d %d - %s: ", tb.millitm,
-				&_stdex_logger_thread_id, _stdex_logger_thread_id.c_str(), id.c_str(),
-				pid, my_id_int, title);
-			ptr += ret;
-			len -= ret;
+			std::cout << buf << std::flush;
 		}
 
-        ret = vsnprintf(ptr, len, fmt, args);
-
-        if (_debug)
-		{
-            std::cout << buf << std::flush;
-		}
-
-        if (_file)
+		if (_file)
 		{
 			if (_level < 7)
-	            _file << buf;
-	        else
-	            _file << buf << std::flush;
+				_file << buf;
+			else
+				_file << buf << std::flush;
 		}
-    }
-
-private:
-    std::ofstream _file;
-    int _level;
-    bool _debug;
-    std::atomic<int> error_count;
-    std::atomic<int> warn_count;
+	}
 
 };
 
