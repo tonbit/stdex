@@ -46,23 +46,21 @@ public:
 	void set_thread_id(const string &id)
 	{
 		_stdex_logger_thread_id = id;
-		log_notice("set thread id: %s %s", _stdex_logger_thread_id.c_str());
 	}
 
 	string get_thread_id()
 	{
 		return _stdex_logger_thread_id;
-		log_notice("get thread id: %s %s", _stdex_logger_thread_id.c_str());
 	}
 
     void set_debug(bool debug)
     {
-        _debug=debug;
+        _debug = debug;
     }
 
     void set_level(int level)
     {
-        _level=level;
+        _level = level;
     }
 
     int get_level()
