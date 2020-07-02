@@ -486,5 +486,23 @@ inline string format(const string &fmt, const string &arg1, const string &arg2, 
 													&arg9, &arg10, &arg11, &arg12, &arg13});
 }
 
+inline string format(const string &fmt, const string &arg1, const string &arg2, const string &arg3,
+	const string &arg4, const string &arg5, const string &arg6, const string &arg7, const string &arg8,
+	const string &arg9, const string &arg10, const string &arg11, const string &arg12, const string &arg13,
+	const string &arg14)
+{
+	return format(fmt, std::vector<const string *>{&arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8,
+													&arg9, &arg10, &arg11, &arg12, &arg13, &arg14});
+}
+
+inline string format(const string &fmt, const string &arg1, const string &arg2, const string &arg3,
+	const string &arg4, const string &arg5, const string &arg6, const string &arg7, const string &arg8,
+	const string &arg9, const string &arg10, const string &arg11, const string &arg12, const string &arg13,
+	const string &arg14, const string &arg15)
+{
+	return format(fmt, std::vector<const string *>{&arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8,
+													&arg9, &arg10, &arg11, &arg12, &arg13, &arg14, &arg15});
+}
+
 }
 #endif //STDEX_STRING_H_
