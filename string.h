@@ -447,5 +447,44 @@ inline string format(const string &fmt, const string &arg1, const string &arg2, 
 	return format(fmt, std::vector<const string *>{&arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8});
 }
 
+inline string format(const string &fmt, const string &arg1, const string &arg2, const string &arg3,
+	const string &arg4, const string &arg5, const string &arg6, const string &arg7, const string &arg8,
+	const string &arg9)
+{
+	return format(fmt, std::vector<const string *>{&arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8, &arg9});
+}
+
+inline string format(const string &fmt, const string &arg1, const string &arg2, const string &arg3,
+	const string &arg4, const string &arg5, const string &arg6, const string &arg7, const string &arg8,
+	const string &arg9, const string &arg10)
+{
+	return format(fmt, std::vector<const string *>{&arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8,
+													&arg9, &arg10});
+}
+
+inline string format(const string &fmt, const string &arg1, const string &arg2, const string &arg3,
+	const string &arg4, const string &arg5, const string &arg6, const string &arg7, const string &arg8,
+	const string &arg9, const string &arg10, const string &arg11)
+{
+	return format(fmt, std::vector<const string *>{&arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8,
+													&arg9, &arg10, &arg11});
+}
+
+inline string format(const string &fmt, const string &arg1, const string &arg2, const string &arg3,
+	const string &arg4, const string &arg5, const string &arg6, const string &arg7, const string &arg8,
+	const string &arg9, const string &arg10, const string &arg11, const string &arg12)
+{
+	return format(fmt, std::vector<const string *>{&arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8,
+													&arg9, &arg10, &arg11, &arg12});
+}
+
+inline string format(const string &fmt, const string &arg1, const string &arg2, const string &arg3,
+	const string &arg4, const string &arg5, const string &arg6, const string &arg7, const string &arg8,
+	const string &arg9, const string &arg10, const string &arg11, const string &arg12, const string &arg13)
+{
+	return format(fmt, std::vector<const string *>{&arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8,
+													&arg9, &arg10, &arg11, &arg12, &arg13});
+}
+
 }
 #endif //STDEX_STRING_H_
