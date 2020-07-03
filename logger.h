@@ -195,6 +195,11 @@ public:
     	return error_count;
     }
 
+	void flush()
+	{
+		_file << std::flush;
+	}
+
 private:
     std::ofstream _file;
     int _level;
@@ -241,10 +246,7 @@ private:
 
 		if (_file)
 		{
-			if (_level < 7)
-				_file << buf;
-			else
-				_file << buf << std::flush;
+			_file << buf;
 		}
 	}
 
