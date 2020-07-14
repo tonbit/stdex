@@ -192,7 +192,7 @@ public:
 
     int get_warn_count()
     {
-    	return error_count;
+    	return warn_count;
     }
 
 	void flush()
