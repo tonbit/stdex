@@ -343,6 +343,30 @@ inline string to_string(bool val)
         return "false";
 }
 
+inline string replace(const string &str, const string &p0, const string &p1)
+{
+	if (str.empty())
+		return str;
+
+	string tmp = str;
+	size_t pos = 0;
+
+	while (true)
+	{
+		pos = tmp.find(p0, pos);
+
+		if (pos == string::npos)
+		{
+			break;
+		}
+
+		tmp.replace(pos, p0.size(), p1);
+		pos += p1.size();
+	}
+
+	return std::move(tmp);
+}
+
 inline string randstr(size_t len)
 {
 	const char *seed = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
