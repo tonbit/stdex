@@ -247,6 +247,11 @@ private:
 		if (_file)
 		{
 			_file << buf;
+			
+			if (level >= 7)
+			{
+				_file << std::flush;
+			}
 		}
 	}
 
