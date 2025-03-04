@@ -5,6 +5,7 @@
 #include "stdex/optional.h"
 #include <mutex>
 #include <condition_variable>
+#include <functional>
 namespace stdex {
 
 template<typename Type>
